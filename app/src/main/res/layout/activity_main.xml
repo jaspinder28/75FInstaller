@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+
+    tools:context=".Activity.MainActivity">
+
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:background="@mipmap/main"/>
+
+
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:id="@+id/etEmail"
+        android:layout_marginLeft="25dp"
+        android:layout_marginRight="25dp"
+        android:padding="5dp"
+        android:background="@drawable/border"
+        android:inputType="textEmailAddress"
+        android:layout_marginTop="190dp"
+        android:hint="Email Address"/>
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:inputType="textPassword"
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="25dp"
+        android:layout_marginRight="25dp"
+        android:padding="5dp"
+        android:background="@drawable/border"
+        android:layout_below="@+id/etEmail"
+        android:id="@+id/etPassword"
+        android:hint="Password"/>
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:id="@+id/bLogin"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="25dp"
+        android:layout_marginRight="25dp"
+        android:padding="5dp"
+        android:textColor="@color/red"
+        android:background="@drawable/border"
+        android:layout_below="@+id/etPassword"
+        android:text="Login"/>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_below="@+id/bLogin"
+        android:layout_marginLeft="25dp"
+        android:layout_marginRight="25dp"
+        android:padding="5dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/border"
+        android:id="@+id/bForgotPass"
+        android:text="Forgot Password"/>
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contextClickable="false"
+        android:visibility="gone"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"/>
+
+</RelativeLayout>
