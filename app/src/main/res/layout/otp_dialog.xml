@@ -4,6 +4,7 @@
     android:layout_height="wrap_content"
     android:layout_marginLeft="25dp"
     android:layout_marginRight="25dp"
+    android:id="@+id/main_layout"
     android:background="@drawable/dialog_border"
     android:orientation="vertical">
 

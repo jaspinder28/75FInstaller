@@ -6,6 +6,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.TextView;
 
 import com.x75f.installer.Activity.CCU_Details;
@@ -15,8 +17,10 @@ import com.x75f.installer.Utils.UsersData;
 import java.util.ArrayList;
 
 
-public class CcuListAdapter extends BaseAdapter {
+public class CcuListAdapter extends BaseAdapter implements Filterable {
     ArrayList<UsersData> Ccudata;
+    ArrayList<UsersData> mainData;
+    ArrayList<UsersData> orig;
     Context c;
     ViewHolder viewHolder;
     View row;
@@ -26,17 +30,28 @@ public class CcuListAdapter extends BaseAdapter {
         Ccudata = new ArrayList<>();
         this.c = c;
         Ccudata = data;
+        mainData = data;
         notifyDataSetChanged();
     }
 
     @Override
     public int getCount() {
-        return Ccudata.size();
+        int x;
+        if (Ccudata == null) {
+            x = mainData.size();
+        } else {
+            x = Ccudata.size();
+        }
+        return x;
     }
 
     @Override
     public Object getItem(int position) {
-        return position;
+        if (Ccudata == null) {
+            return mainData.get(position);
+        } else {
+            return Ccudata.get(position);
+        }
     }
 
     @Override
@@ -57,22 +72,77 @@ public class CcuListAdapter extends BaseAdapter {
         } else {
             viewHolder = (ViewHolder) row.getTag();
         }
-        if (Ccudata.size() > 0) {
-            viewHolder.tvCcuName.setText(Ccudata.get(position).getCcuName());
-            viewHolder.tvCcuAddress.setText(Ccudata.get(position).getAddress() + " " + Ccudata.get(position).getZipcode());
+        if (Ccudata == null) {
+            if (mainData.size() > 0) {
+                viewHolder.tvCcuName.setText(mainData.get(position).getCcuName());
+                viewHolder.tvCcuAddress.setText(mainData.get(position).getAddress() + " " + mainData.get(position).getZipcode());
 
-            row.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent i = new Intent(c, CCU_Details.class);
-                    i.putExtra("CcuData", Ccudata.get(position).getCcuName());
-                    i.putExtra("ccu_id", Ccudata.get(position).getUsername());
-                    c.startActivity(i);
+                row.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent i = new Intent(c, CCU_Details.class);
+                        i.putExtra("CcuData", mainData.get(position).getCcuName());
+                        i.putExtra("ccu_id", mainData.get(position).getUsername());
+                        c.startActivity(i);
 
-                }
-            });
+                    }
+                });
+            }
+        } else {
+            if (Ccudata.size() > 0) {
+                viewHolder.tvCcuName.setText(Ccudata.get(position).getCcuName());
+                viewHolder.tvCcuAddress.setText(Ccudata.get(position).getAddress() + " " + Ccudata.get(position).getZipcode());
+
+                row.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent i = new Intent(c, CCU_Details.class);
+                        i.putExtra("CcuData", Ccudata.get(position).getCcuName());
+                        i.putExtra("ccu_id", Ccudata.get(position).getUsername());
+                        c.startActivity(i);
+
+                    }
+                });
+            }
         }
         return row;
+    }
+
+    @Override
+    public Filter getFilter() {
+        return new Filter() {
+
+            @Override
+            protected FilterResults performFiltering(CharSequence constraint) {
+                final FilterResults oReturn = new FilterResults();
+                final ArrayList<UsersData> results = new ArrayList<UsersData>();
+                if (orig == null)
+                    orig = Ccudata;
+                if (constraint != null) {
+                    if (orig != null && orig.size() > 0) {
+                        for (final UsersData g : orig) {
+                            if (g.getCcuName().toLowerCase()
+                                    .contains(constraint.toString()))
+                                results.add(g);
+                        }
+                    }
+                    oReturn.values = results;
+                }
+                return oReturn;
+            }
+
+            @SuppressWarnings("unchecked")
+            @Override
+            protected void publishResults(CharSequence constraint,
+                                          FilterResults results) {
+                Ccudata = (ArrayList<UsersData>) results.values;
+                notifyDataSetChanged();
+            }
+        };
+    }
+
+    public void notifyDataSetChanged() {
+        super.notifyDataSetChanged();
     }
 
     public class ViewHolder {
@@ -86,4 +156,6 @@ public class CcuListAdapter extends BaseAdapter {
 
 
     }
+
+
 }

@@ -8,12 +8,16 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.NumberPicker;
 import android.widget.RelativeLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,8 +41,7 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 
 
-public class SystemTestFragment extends Fragment implements View.OnClickListener, NumberPicker.OnScrollListener {
-    static int mStackLevel = 0;
+public class SystemTestFragment extends Fragment implements View.OnClickListener, AdapterView.OnItemSelectedListener {
     @InjectView(R.id.coolingStage1)
     Button coolingStage1;
     @InjectView(R.id.coolingStage2)
@@ -76,13 +79,13 @@ public class SystemTestFragment extends Fragment implements View.OnClickListener
     @InjectView(R.id.row9)
     RelativeLayout row9;
     @InjectView(R.id.analog1)
-    NumberPicker analog1;
+    Spinner analog1;
     @InjectView(R.id.analog2)
-    NumberPicker analog2;
+    Spinner analog2;
     @InjectView(R.id.analog3)
-    NumberPicker analog3;
+    Spinner analog3;
     @InjectView(R.id.analog4)
-    NumberPicker analog4;
+    Spinner analog4;
     String ccuname;
     private static ProgressDialog Pleasewait;
     public int cooling_stage1val;
@@ -92,12 +95,20 @@ public class SystemTestFragment extends Fragment implements View.OnClickListener
     public int heating_stage1val;
     public int heating_stage2val;
     public int humidifierval;
+    int analog1position = 0;
+    int analog2position = 0;
+    int analog3position = 0;
+    int analog4position = 0;
+    View v;
+    Integer[] damperValues = new Integer[]{0,1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+            21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 5, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70
+            , 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100};
 
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.system_test_fragment, container, false);
+        v = inflater.inflate(R.layout.system_test_fragment, container, false);
         ButterKnife.inject(this, v);
         return v;
     }
@@ -106,6 +117,9 @@ public class SystemTestFragment extends Fragment implements View.OnClickListener
     public void setMenuVisibility(boolean menuVisible) {
         super.setMenuVisibility(menuVisible);
         if (SystemTestFragment.this != null && isVisible() && CCU_Details.viewPager.getCurrentItem() == 2) {
+            Generic_Methods.PauseCalled();
+            Generic_Methods.PauseCalled1();
+            Log.d("systemtest", "yes");
             Query newquery = new Query();
             ccuname = getArguments().getString("ccuname");
             newquery.equals("ccu_name", ccuname);
@@ -114,7 +128,7 @@ public class SystemTestFragment extends Fragment implements View.OnClickListener
                     Pleasewait = ProgressDialog.show(CCU_Details.getSingletonContext(), "", "Please Wait...");
                 }
 
-                AsyncAppData<GenericJson> summary = CCU_Details.mKinveyClient.appData("00CCUSummary", GenericJson.class);
+                AsyncAppData<GenericJson> summary = Generic_Methods.getKinveyClient().appData("00CCUSummary", GenericJson.class);
                 summary.get(newquery, new KinveyListCallback<GenericJson>() {
                     @Override
                     public void onSuccess(GenericJson[] genericJsons) {
@@ -243,22 +257,42 @@ public class SystemTestFragment extends Fragment implements View.OnClickListener
     public void setTheValues(String SummaryData) {
         try {
             JSONObject s = new JSONObject(SummaryData);
-            Summary_Data sd = new Summary_Data(s.getString("ccu_name"), s.getString("date_time"), s.getInt("building_no_cooler"), s.getInt("building_no_hotter"), s.getInt("user_no_cooler"), s.getInt("user_no_hotter"),
-                    s.getInt("cm_cur_temp"), s.getInt("cm_cur_humidity"), s.getInt("cooling_stage_1"), s.getInt("cooling_stage_2"),
-                    s.getInt("heating_stage_1"), s.getInt("heating_stage_2"), s.getInt("fan_stage_1"), s.getInt("fan_stage_2"), s.getInt("humidifier"), s.getBoolean("isEconomizerAvailable"),
-                    s.getBoolean("isPaired"), s.getInt("analog1_damperPos"), s.getInt("analog2_damperPos"), s.getInt("analog3_damperPos"),
-                    s.getInt("analog4_damperPos"), s.getDouble("mInsideAirEnthalpy"), s.getDouble("mOutsideAirEnthalpy"), s.getInt("mOutsideAirTemperature"), s.getInt("mOutsideAirMaxTemp"),
-                    s.getInt("mOutsideAirMinTemp"), s.getInt("mOutsideAirHumidity"), s.getInt("mOutsideAirMaxHumidity"), s.getInt("mOutsideAirMinHumidity"),
-                    s.getInt("mCO2Level"), s.getInt("mCO2LevelThreshold"), s.getInt("mMixedAirTemperature"), s.getInt("mReturnAirTemperature"), s.getInt("mDamperPos"), s.getString("zone_summary"));
+            Summary_Data sd = null;
+            if (s.getBoolean("isPaired")) {
+                sd = new Summary_Data(s.getString("ccu_name"), s.getString("date_time"), s.getInt("building_no_cooler"), s.getInt("building_no_hotter"), s.getInt("user_no_cooler"), s.getInt("user_no_hotter"),
+                        s.getInt("cm_cur_temp"), s.getInt("cm_cur_humidity"), s.getInt("cooling_stage_1"), s.getInt("cooling_stage_2"),
+                        s.getInt("heating_stage_1"), s.getInt("heating_stage_2"), s.getInt("fan_stage_1"), s.getInt("fan_stage_2"), s.getInt("humidifier"), s.getBoolean("isEconomizerAvailable"),
+                        s.getBoolean("isPaired"), s.getInt("analog1_damperPos"), s.getInt("analog2_damperPos"), s.getInt("analog3_damperPos"),
+                        s.getInt("analog4_damperPos"), s.getDouble("mInsideAirEnthalpy"), s.getDouble("mOutsideAirEnthalpy"), s.getInt("mOutsideAirTemperature"), s.getInt("mOutsideAirMaxTemp"),
+                        s.getInt("mOutsideAirMinTemp"), s.getInt("mOutsideAirHumidity"), s.getInt("mOutsideAirMaxHumidity"), s.getInt("mOutsideAirMinHumidity"),
+                        s.optInt("mCO2Level", 0), s.optInt("mCO2LevelThreshold", 2000), s.getInt("mMixedAirTemperature"), s.getInt("mReturnAirTemperature"), s.getInt("mDamperPos"), s.getString("zone_summary"),
+                        s.optInt("mNO2Level", 0), s.optInt("mNO2LevelThreshold", 10), s.optInt("mCOLevel", 0), s.optInt("mCOLevelThreshold", 250), s.optBoolean("isPressureSensorPaired", false),
+                        s.optDouble("mPressureLevel", 0), s.optDouble("mPressureLevelThreshold", 0), s.optBoolean("isCOPaired", false), s.optBoolean("isNO2Paired", false));
+
+            } else {
+                sd = new Summary_Data(s.getString("ccu_name"), s.getString("date_time"), s.getInt("building_no_cooler"), s.getInt("building_no_hotter"), s.getInt("user_no_cooler"), s.getInt("user_no_hotter"),
+                        s.getInt("cm_cur_temp"), s.getInt("cm_cur_humidity"), s.getInt("cooling_stage_1"), s.getInt("cooling_stage_2"),
+                        s.getInt("heating_stage_1"), s.getInt("heating_stage_2"), s.getInt("fan_stage_1"), s.getInt("fan_stage_2"), s.getInt("humidifier"), s.getBoolean("isEconomizerAvailable"),
+                        s.getBoolean("isPaired"), s.getInt("analog1_damperPos"), s.getInt("analog2_damperPos"), s.getInt("analog3_damperPos"),
+                        s.getInt("analog4_damperPos"), s.getDouble("mInsideAirEnthalpy"), s.getDouble("mOutsideAirEnthalpy"), s.getInt("mOutsideAirTemperature"), s.getInt("mOutsideAirMaxTemp"),
+                        s.getInt("mOutsideAirMinTemp"), s.getInt("mOutsideAirHumidity"), s.getInt("mOutsideAirMaxHumidity"), s.getInt("mOutsideAirMinHumidity"),
+                        s.getInt("mMixedAirTemperature"), s.getInt("mReturnAirTemperature"), s.getInt("mDamperPos"), s.getString("zone_summary"),
+                        s.optBoolean("isPressureSensorPaired", false), s.optDouble("mPressureLevel", 0), s.optDouble("mPressureLevelThreshold", 0));
+            }
             if (isVisible() && CCU_Details.viewPager.getCurrentItem() == 2) {
-                analog1.setMinValue(0);
-                analog1.setMaxValue(100);
-                analog2.setMinValue(0);
-                analog2.setMaxValue(100);
-                analog3.setMinValue(0);
-                analog3.setMaxValue(100);
-                analog4.setMinValue(0);
-                analog4.setMaxValue(100);
+//                analog1.setMinValue(0);
+//                analog1.setMaxValue(100);
+                ArrayAdapter<Integer> adapter = new ArrayAdapter<Integer>(getActivity(), android.R.layout.simple_spinner_item, damperValues);
+                analog1.setAdapter(adapter);
+                analog2.setAdapter(adapter);
+                analog3.setAdapter(adapter);
+                analog4.setAdapter(adapter);
+//                analog2.setMinValue(0);
+//                analog2.setMaxValue(100);
+//                analog3.setMinValue(0);
+//                analog3.setMaxValue(100);
+//                analog4.setMinValue(0);
+//                analog4.setMaxValue(100);
                 if (sd.getCooling_stage_1() == 0) {
                     cooling_stage1val = 0;
                     coolingStage1.setText("OFF");
@@ -348,17 +382,29 @@ public class SystemTestFragment extends Fragment implements View.OnClickListener
                     humidifierval = -1;
                     row7.setVisibility(View.GONE);
                 }
-                analog1.setValue(sd.getAnalog1_damperPos());
-                analog2.setValue(sd.getAnalog2_damperPos());
-                analog3.setValue(sd.getAnalog3_damperPos());
-                analog4.setValue(sd.getAnalog4_damperPos());
+
+//                analog1.setValue(sd.getAnalog1_damperPos());
+                analog1.setSelection(sd.getAnalog1_damperPos());
+                analog2.setSelection(sd.getAnalog2_damperPos());
+                analog3.setSelection(sd.getAnalog3_damperPos());
+                analog4.setSelection(sd.getAnalog4_damperPos());
+                analog1position = sd.getAnalog1_damperPos();
+                analog2position = sd.getAnalog2_damperPos();
+                analog3position = sd.getAnalog3_damperPos();
+                analog4position = sd.getAnalog4_damperPos();
+//                analog2.setValue(sd.getAnalog2_damperPos());
+//                analog3.setValue(sd.getAnalog3_damperPos());
+//                analog4.setValue(sd.getAnalog4_damperPos());
                 coolingStage1.setOnClickListener(SystemTestFragment.this);
                 coolingStage2.setOnClickListener(SystemTestFragment.this);
                 fanStage1.setOnClickListener(SystemTestFragment.this);
                 fanStage2.setOnClickListener(SystemTestFragment.this);
                 heatingStage1.setOnClickListener(SystemTestFragment.this);
                 heatingStage2.setOnClickListener(SystemTestFragment.this);
-                analog1.setOnScrollListener(this);
+                analog1.setOnItemSelectedListener(this);
+                analog2.setOnItemSelectedListener(this);
+                analog3.setOnItemSelectedListener(this);
+                analog4.setOnItemSelectedListener(this);
                 humidifier.setOnClickListener(SystemTestFragment.this);
                 if (Pleasewait != null && Pleasewait.isShowing()) {
                     Pleasewait.dismiss();
@@ -366,14 +412,15 @@ public class SystemTestFragment extends Fragment implements View.OnClickListener
             }
         } catch (JSONException e) {
             e.printStackTrace();
+            Log.d("JSONException", e.getMessage());
         }
     }
 
     public void PubnubCall() {
         if (Generic_Methods.isNetworkAvailable(CCU_Details.getSingletonContext())) {
             String channel = getArguments().getString("ccu_id") + "_Installer_SYSTEST";
-            String msg = Generic_Methods.createPubnubSystemTestMsg(analog1.getValue(), analog2.getValue(),
-                    analog3.getValue(), analog4.getValue(), cooling_stage1val, cooling_stage2val, fan_stage1val, fan_stage2val,
+            String msg = Generic_Methods.createPubnubSystemTestMsg(analog1position, analog2position,
+                    analog3position, analog4position, cooling_stage1val, cooling_stage2val, fan_stage1val, fan_stage2val,
                     heating_stage1val, heating_stage2val, humidifierval);
             Generic_Methods.PublishToChannel(channel, msg);
         } else {
@@ -383,30 +430,43 @@ public class SystemTestFragment extends Fragment implements View.OnClickListener
 
 
     @Override
-    public void onScrollStateChange(NumberPicker view, int scrollState) {
-        switch (view.getId()) {
-            case (R.id.analog1):
-                if (scrollState == SCROLL_STATE_IDLE) {
-                    PubnubCall();
-                }
-                break;
-            case (R.id.analog2):
-                if (scrollState == SCROLL_STATE_IDLE) {
-                    PubnubCall();
-                }
-                break;
-            case (R.id.analog3):
-                if (scrollState == SCROLL_STATE_IDLE) {
-                    PubnubCall();
-                }
-                break;
-            case (R.id.analog4):
-                if (scrollState == SCROLL_STATE_IDLE) {
-                    PubnubCall();
-                }
-                break;
-        }
+    public void onDestroy() {
+        super.onDestroy();
+        Thread h = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Generic_Methods.unbindDrawables(v.findViewById(R.id.main_layout));
+            }
+        });
+        h.start();
+
     }
 
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        switch (view.getId()) {
+            case (R.id.analog1):
+                analog1position = (int) parent.getItemAtPosition(position);
+                PubnubCall();
+                break;
+            case (R.id.analog2):
+                analog2position = (int) parent.getItemAtPosition(position);
+                PubnubCall();
+                break;
+            case (R.id.analog3):
+                analog3position = (int) parent.getItemAtPosition(position);
+                PubnubCall();
+                break;
+            case (R.id.analog4):
+                analog4position = (int) parent.getItemAtPosition(position);
+                PubnubCall();
+                break;
+        }
 
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+
+    }
 }

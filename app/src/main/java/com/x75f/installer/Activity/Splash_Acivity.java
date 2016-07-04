@@ -1,8 +1,14 @@
 package com.x75f.installer.Activity;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+
 import com.kinvey.android.Client;
 import com.kinvey.android.callback.KinveyListCallback;
 import com.kinvey.android.callback.KinveyUserCallback;
@@ -18,38 +24,69 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 
-public class Splash_Acivity extends Activity {
-    private Client mKinveyClient;
+public class Splash_Acivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.splash);
         try {
-            if (Generic_Methods.getBooleanPreference(Splash_Acivity.this, "isloggedIn", "login")) {
-                if (Generic_Methods.isNetworkAvailable(this)) {
-                    mKinveyClient = new Client.Builder(this.getApplicationContext()).build();
-                    if (mKinveyClient.user().isUserLoggedIn()) {
-                        mKinveyClient.user().logout().execute();
-                        mKinveyClient.user().login(Generic_Methods.getStringPreference(Splash_Acivity.this, "email", "login"), Generic_Methods.getStringPreference(Splash_Acivity.this, "password", "login"), new KinveyUserCallback() {
-                            @Override
-                            public void onSuccess(User user) {
-                                checkIfUserIsOfTypeInstaller(user);
-                            }
 
-                            @Override
-                            public void onFailure(Throwable throwable) {
-                                Intent i = new Intent(Splash_Acivity.this, MainActivity.class);
-                                startActivity(i);
-                                finish();
-                            }
-                        });
+            if (isNetworkAvailable(Splash_Acivity.this)) {
+                if (getBooleanPreference(Splash_Acivity.this, "isloggedIn", "login")) {
+                    if (isNetworkAvailable(this)) {
+                        if (Generic_Methods.getKinveyClient().user().isUserLoggedIn()) {
+                            Generic_Methods.getKinveyClient().user().logout().execute();
+                            Generic_Methods.getKinveyClient().user().login(Generic_Methods.getStringPreference(Splash_Acivity.this, "email", "login"), Generic_Methods.getStringPreference(Splash_Acivity.this, "password", "login"), new KinveyUserCallback() {
+                                @Override
+                                public void onSuccess(final User user) {
+
+                                    checkIfUserIsOfTypeInstaller(user);
+//                                        }
+//                                    });
+
+                                }
+
+                                @Override
+                                public void onFailure(Throwable throwable) {
+
+                                    Intent i = new Intent(Splash_Acivity.this, MainActivity.class);
+                                    startActivity(i);
+                                    finish();
+
+
+                                }
+                            });
+                        } else {
+                            Generic_Methods.getKinveyClient().user().login(Generic_Methods.getStringPreference(Splash_Acivity.this, "email", "login"), Generic_Methods.getStringPreference(Splash_Acivity.this, "password", "login"), new KinveyUserCallback() {
+                                @Override
+                                public void onSuccess(final User user) {
+
+                                    checkIfUserIsOfTypeInstaller(user);
+//                                        }
+//                                    });
+
+                                }
+
+                                @Override
+                                public void onFailure(Throwable throwable) {
+
+                                    Intent i = new Intent(Splash_Acivity.this, MainActivity.class);
+                                    startActivity(i);
+                                    finish();
+
+
+                                }
+                            });
+                        }
                     }
+                } else {
+                    Intent i = new Intent(this, MainActivity.class);
+                    startActivity(i);
+                    finish();
                 }
             } else {
-                Intent i = new Intent(this, MainActivity.class);
-                startActivity(i);
-                finish();
+                Generic_Methods.getToast(Splash_Acivity.this, getResources().getString(R.string.user_offline));
             }
         } catch (Exception e) {
             Intent i = new Intent(this, MainActivity.class);
@@ -65,13 +102,9 @@ public class Splash_Acivity extends Activity {
         userType.equals("user_type", "ccu");
         userType.equals("installerEmail", useremail);
 
-        mKinveyClient.user().retrieve(userType, new KinveyListCallback<User>() {
-            @Override
-            public void onSuccess(final User[] usersDatas) {
-
-                Runnable r = new Runnable() {
+        Generic_Methods.getKinveyClient().user().retrieve(userType, new KinveyListCallback<User>() {
                     @Override
-                    public void run() {
+                    public void onSuccess(final User[] usersDatas) {
                         try {
                             ArrayList<UsersData> ccudata = new ArrayList<>();
                             for (int i = 0; i < usersDatas.length; i++) {
@@ -90,25 +123,48 @@ public class Splash_Acivity extends Activity {
                             finish();
                         } catch (JSONException e) {
                             e.printStackTrace();
+
+
                         }
                     }
-                };
-                r.run();
 
-            }
+                    @Override
+                    public void onFailure(Throwable throwable) {
+                        Intent i = new Intent(Splash_Acivity.this, MainActivity.class);
+                        startActivity(i);
+                        finish();
+                    }
+                }
 
-            @Override
-            public void onFailure(Throwable throwable) {
-                Intent i = new Intent(Splash_Acivity.this, MainActivity.class);
-                startActivity(i);
-                finish();
-            }
-        });
+        );
 
 
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Thread h = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Generic_Methods.unbindDrawables(findViewById(R.id.main_layout));
+            }
+        });
+        h.start();
 
+    }
 
+    public static boolean isNetworkAvailable(Context c) {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) c.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
 
+    static public Boolean getBooleanPreference(Context c, String key, String sharedpref) {
+
+        SharedPreferences settings = c.getSharedPreferences(sharedpref,
+                Context.MODE_PRIVATE);
+        return settings.getBoolean(key, false);
+    }
 }

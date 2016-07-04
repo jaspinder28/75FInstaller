@@ -1,7 +1,9 @@
 package com.x75f.installer.Activity;
 
+import android.annotation.TargetApi;
 import android.app.Dialog;
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -34,12 +36,14 @@ public class Otp_Verification extends Dialog implements View.OnClickListener {
     Button ok;
     private static String ccu_id1;
     private SQLliteAdapter sqLliteAdapter;
+    private int tab;
 
 
-    public Otp_Verification(Context c, String ccu_id) {
+    public Otp_Verification(Context c, String ccu_id, int tab) {
         super(c);
         this.c = c;
         ccu_id1 = ccu_id;
+        this.tab = tab;
     }
 
     @Override
@@ -66,13 +70,13 @@ public class Otp_Verification extends Dialog implements View.OnClickListener {
                     Query newquery = new Query();
                     newquery.equals("_id", ccu_id1);
                     if (Generic_Methods.isNetworkAvailable(CCU_Details.getSingletonContext())) {
-                        AsyncAppData<GenericJson> summary = CCU_Details.mKinveyClient.appData("00CCUOneTimePassword", GenericJson.class);
+                        AsyncAppData<GenericJson> summary = Generic_Methods.getKinveyClient().appData("00CCUOneTimePassword", GenericJson.class);
                         summary.get(newquery, new KinveyListCallback<GenericJson>() {
                             @Override
                             public void onSuccess(GenericJson[] genericJsons) {
                                 try {
                                     if (genericJsons.length == 0) {
-                                        Generic_Methods.getToast(CCU_Details.getSingletonContext(), "Your OTP has expird.Please regenerate OTP.");
+                                        Generic_Methods.getToast(CCU_Details.getSingletonContext(), c.getString(R.string.wrong_otp));
                                     } else if (genericJsons.length == 1) {
                                         VerifyOTP(genericJsons[0].toString());
                                     }
@@ -89,7 +93,7 @@ public class Otp_Verification extends Dialog implements View.OnClickListener {
                         });
 
                     } else {
-                        Generic_Methods.getToast(CCU_Details.getSingletonContext(),CCU_Details.getSingletonContext().getResources().getString(R.string.user_offline));
+                        Generic_Methods.getToast(CCU_Details.getSingletonContext(), CCU_Details.getSingletonContext().getResources().getString(R.string.user_offline));
                     }
                 }
                 break;
@@ -97,6 +101,8 @@ public class Otp_Verification extends Dialog implements View.OnClickListener {
 
     }
 
+
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
     public void VerifyOTP(String otp1) {
         try {
             JSONObject s = new JSONObject(otp1);
@@ -105,14 +111,41 @@ public class Otp_Verification extends Dialog implements View.OnClickListener {
                 int x = sqLliteAdapter.update(ccu_id1, 1);
                 Log.d("updaterow", x + "");
                 dismiss();
+                CCU_Details.viewPager.setCurrentItem(tab);
+                if (tab == 2) {
+                    CCU_Details.bSummary.setTextColor(c.getResources().getColor(R.color.gray));
+                    CCU_Details.bSummary.setCompoundDrawablesRelativeWithIntrinsicBounds(null, c.getResources().getDrawable(R.mipmap.summary), null, null);
+                    CCU_Details.bDatalog.setTextColor(c.getResources().getColor(R.color.gray));
+                    CCU_Details.bDatalog.setCompoundDrawablesRelativeWithIntrinsicBounds(null, c.getResources().getDrawable(R.mipmap.datalog), null, null);
+                    CCU_Details.bSystem.setTextColor(c.getResources().getColor(R.color.primary));
+                    CCU_Details.bSystem.setCompoundDrawablesRelativeWithIntrinsicBounds(null, c.getResources().getDrawable(R.mipmap.systemtestc), null, null);
+                    CCU_Details.bDamper.setTextColor(c.getResources().getColor(R.color.gray));
+                    CCU_Details.bDamper.setCompoundDrawablesRelativeWithIntrinsicBounds(null, c.getResources().getDrawable(R.mipmap.damper), null, null);
+                    CCU_Details.bNotes.setTextColor(c.getResources().getColor(R.color.gray));
+                    CCU_Details.bNotes.setCompoundDrawablesRelativeWithIntrinsicBounds(null, c.getResources().getDrawable(R.mipmap.notes), null, null);
+                } else {
+                    CCU_Details.bSummary.setTextColor(c.getResources().getColor(R.color.gray));
+                    CCU_Details.bSummary.setCompoundDrawablesRelativeWithIntrinsicBounds(null, c.getResources().getDrawable(R.mipmap.summary), null, null);
+                    CCU_Details.bDatalog.setTextColor(c.getResources().getColor(R.color.gray));
+                    CCU_Details.bDatalog.setCompoundDrawablesRelativeWithIntrinsicBounds(null, c.getResources().getDrawable(R.mipmap.datalog), null, null);
+                    CCU_Details.bSystem.setTextColor(c.getResources().getColor(R.color.gray));
+                    CCU_Details.bSystem.setCompoundDrawablesRelativeWithIntrinsicBounds(null, c.getResources().getDrawable(R.mipmap.systemtest), null, null);
+                    CCU_Details.bDamper.setTextColor(c.getResources().getColor(R.color.primary));
+                    CCU_Details.bDamper.setCompoundDrawablesRelativeWithIntrinsicBounds(null, c.getResources().getDrawable(R.mipmap.damperc), null, null);
+                    CCU_Details.bNotes.setTextColor(c.getResources().getColor(R.color.gray));
+                    CCU_Details.bNotes.setCompoundDrawablesRelativeWithIntrinsicBounds(null, c.getResources().getDrawable(R.mipmap.notes), null, null);
+                }
+
             } else {
                 otp.setText("");
-
                 Generic_Methods.getToast(CCU_Details.getSingletonContext(), c.getString(R.string.wrong_otp));
                 sqLliteAdapter.update(ccu_id1, 0);
             }
+
         } catch (Exception e) {
             sqLliteAdapter.update(ccu_id1, 0);
         }
     }
+
+
 }

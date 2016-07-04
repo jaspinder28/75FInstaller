@@ -17,15 +17,15 @@ public class SQLliteAdapter {
         sqLlite = new SQLlite(c);
     }
 
-    public boolean isEmpty(){
+    public boolean isEmpty() {
         SQLiteDatabase db = sqLlite.getWritableDatabase();
-        String count = "SELECT count(*) FROM "+ SQLlite.TABLE_NAME;
+        String count = "SELECT count(*) FROM " + SQLlite.TABLE_NAME;
         Cursor mcursor = db.rawQuery(count, null);
         mcursor.moveToFirst();
         int icount = mcursor.getInt(0);
-        if(icount == 0){
+        if (icount == 0) {
             return true;
-        }else {
+        } else {
             return false;
         }
     }
@@ -78,15 +78,25 @@ public class SQLliteAdapter {
         return i;
     }
 
+    public void updateEntire() {
+        try{
+            SQLiteDatabase db = sqLlite.getWritableDatabase();
+            String query = "UPDATE "+ SQLlite.TABLE_NAME+" SET "+ SQLlite.VERIFIED +" = 0";
+            db.execSQL(query);
+        }catch (Exception e){
+            Log.d("databaseerror",e.getStackTrace().toString());
+        }
+    }
+
 
     static class SQLlite extends SQLiteOpenHelper {
         private Context c;
         private static final String DATABASE_NAME = "LOCAL75F";
         private static final String TABLE_NAME = "OTPCHECK";
-        private static final int VERSION = 1;
+        private static final int VERSION = 2;
         private static final String CCU_ID = "_ccuid";
         private static final String VERIFIED = "Verified";
-        private static final String CREATE_TABLE = "CREATE TABLE " + TABLE_NAME + "(" + CCU_ID + " VARCHAR(255) PRIMARY KEY ," + VERIFIED + " INTEGER DEFAULT 0 );";
+        private static final String CREATE_TABLE = "CREATE TABLE " + TABLE_NAME + "(" + CCU_ID + " TEXT PRIMARY KEY ," + VERIFIED + " INTEGER DEFAULT 0 );";
         private static final String DROP_TABLE = "DROP TABLE IF EXISTS " + TABLE_NAME;
 
         public SQLlite(Context context) {

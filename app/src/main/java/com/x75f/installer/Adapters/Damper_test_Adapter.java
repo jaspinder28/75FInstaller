@@ -71,6 +71,7 @@ public class Damper_test_Adapter extends BaseAdapter {
             seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+
                     damper_position.setText(progress + "");
                 }
 
@@ -85,6 +86,8 @@ public class Damper_test_Adapter extends BaseAdapter {
                         String channel = cccuid + "_Installer_DMPTEST";
                         String msg = Generic_Methods.createPubnubSystemDamperMsg(seekBar.getProgress(), temp.getFsv_address());
                         Generic_Methods.PublishToChannel(channel, msg);
+                        int pos = (int) seekBar.getTag();
+                        row_datas.set(pos, new Damper_test_row_data(row_datas.get(pos).getName(),seekBar.getProgress(),row_datas.get(pos).getFsv_address()));
                     } else {
                         Generic_Methods.getToast(CCU_Details.getSingletonContext(), CCU_Details.getSingletonContext().getResources().getString(R.string.user_offline));
                     }

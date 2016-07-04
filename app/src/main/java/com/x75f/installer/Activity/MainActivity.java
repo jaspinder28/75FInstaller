@@ -2,9 +2,11 @@ package com.x75f.installer.Activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
@@ -40,7 +42,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     Button bForgotPass;
     @InjectView(R.id.progressBar)
     ProgressBar progressBar;
-    private Client mKinveyClient;
     private static Context _singleton;
 
     public static Context getSingletonContext() {
@@ -53,8 +54,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
         ButterKnife.inject(this);
         _singleton = this;
+        bForgotPass.setPaintFlags(Paint.UNDERLINE_TEXT_FLAG);
         //initilize kinvey client
-        mKinveyClient = new Client.Builder(this.getApplicationContext()).build();
         bLogin.setOnClickListener(this);
     }
 
@@ -66,6 +67,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 if (Generic_Methods.isNetworkAvailable(MainActivity.getSingletonContext())) {
                     if (etEmail.getText().toString().equalsIgnoreCase("")) {
                         Toast.makeText(MainActivity.this, R.string.email_empty, Toast.LENGTH_SHORT).show();
+                    } else if (etEmail.getText().toString().indexOf("@") == -1 || etEmail.getText().toString().indexOf(".") == -1) {
+                        Toast.makeText(MainActivity.this, R.string.invalid_email, Toast.LENGTH_SHORT).show();
                     } else if (etPassword.getText().toString().equalsIgnoreCase("")) {
                         Toast.makeText(MainActivity.this, R.string.password_empty, Toast.LENGTH_SHORT).show();
                     } else if (!etEmail.getText().toString().equalsIgnoreCase("installer@75f.io")) {
@@ -73,11 +76,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     } else {
 
 
-                        if (mKinveyClient.user().isUserLoggedIn()) {
-                            mKinveyClient.user().logout().execute();
+                        if (Generic_Methods.getKinveyClient().user().isUserLoggedIn()) {
+                            Generic_Methods.getKinveyClient().user().logout().execute();
                         }
                         progressBar.setVisibility(View.VISIBLE);
-                        mKinveyClient.user().login(etEmail.getText().toString().toLowerCase(), etPassword.getText().toString(), new KinveyUserCallback() {
+                        Generic_Methods.getKinveyClient().user().login(etEmail.getText().toString().toLowerCase(), etPassword.getText().toString(), new KinveyUserCallback() {
                             @Override
                             public void onSuccess(User user) {
                                 Generic_Methods.createEditLoginSharedPreference(MainActivity.getSingletonContext(), true, etEmail.getText().toString(), etPassword.getText().toString(), false);
@@ -110,8 +113,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Query userType = new Query();
         userType.equals("user_type", "ccu");
         userType.equals("installerEmail", useremail);
-
-        mKinveyClient.user().retrieve(userType, new KinveyListCallback<User>() {
+        Generic_Methods.getKinveyClient().user().retrieve(userType, new KinveyListCallback<User>() {
             @Override
             public void onSuccess(User[] usersDatas) {
                 try {
@@ -145,5 +147,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Thread h = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Generic_Methods.unbindDrawables(findViewById(R.id.main_layout));
+            }
+        });
+        h.start();
+
+    }
+
 
 }

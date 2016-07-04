@@ -1,28 +1,38 @@
 package com.x75f.installer.Activity;
 
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.google.api.client.json.GenericJson;
 import com.kinvey.android.AsyncAppData;
 import com.kinvey.android.Client;
 import com.kinvey.android.callback.KinveyListCallback;
+import com.kinvey.android.callback.KinveyUserCallback;
+import com.kinvey.java.Logger;
 import com.kinvey.java.Query;
+import com.kinvey.java.User;
 import com.x75f.installer.DB_Local.SQLliteAdapter;
 import com.x75f.installer.Fragments.DamperTestFragment;
 import com.x75f.installer.Fragments.DataLogFragment;
@@ -31,6 +41,7 @@ import com.x75f.installer.Fragments.Summary_Fragment;
 import com.x75f.installer.Fragments.SystemTestFragment;
 import com.x75f.installer.R;
 import com.x75f.installer.Utils.Generic_Methods;
+
 import org.json.JSONObject;
 
 import butterknife.ButterKnife;
@@ -40,23 +51,16 @@ import butterknife.InjectView;
 public class CCU_Details extends AppCompatActivity implements View.OnClickListener {
 
     public static ViewPager viewPager;
-    @InjectView(R.id.bSummary)
-    Button bSummary;
-    @InjectView(R.id.bDatalog)
-    Button bDatalog;
-    @InjectView(R.id.bSystem)
-    Button bSystem;
-    @InjectView(R.id.bDamper)
-    Button bDamper;
-    @InjectView(R.id.bNotes)
-    Button bNotes;
-    @InjectView(R.id.tool_bar)
-    Toolbar tool_bar;
     String ccuname;
     String ccuid;
+    public static Button bSummary;
+    public static Toolbar tool_bar;
+    public static Button bDatalog;
+    public static Button bSystem;
+    public static Button bDamper;
+    public static Button bNotes;
     public static int currentPage;
     private static Context _singleton;
-    public static Client mKinveyClient;
     public SQLliteAdapter sqLliteAdapter;
 
     public static Context getSingletonContext() {
@@ -68,11 +72,18 @@ public class CCU_Details extends AppCompatActivity implements View.OnClickListen
         super.onCreate(savedInstanceState);
         setContentView(R.layout.details_pages);
         viewPager = (ViewPager) findViewById(R.id.ViewPager);
-        ButterKnife.inject(this);
-        _singleton = this;
-        sqLliteAdapter = new SQLliteAdapter(CCU_Details.this);
-        tool_bar.setTitle("Select CCU");
+        bSummary = (Button) findViewById(R.id.bSummary);
+        bDatalog = (Button) findViewById(R.id.bDatalog);
+        bSystem = (Button) findViewById(R.id.bSystem);
+        bDamper = (Button) findViewById(R.id.bDamper);
+        bNotes = (Button) findViewById(R.id.bNotes);
+        tool_bar = (Toolbar) findViewById(R.id.tool_bar);
+
+        setSupportActionBar(tool_bar);
+        getSupportActionBar().setTitle("Select CCU");
         tool_bar.setNavigationIcon(getResources().getDrawable(R.mipmap.back));
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
 //        tool_bar.getNavigationIcon().setTint(getResources().getColor(R.color.white));
         tool_bar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -80,11 +91,29 @@ public class CCU_Details extends AppCompatActivity implements View.OnClickListen
                 onBackPressed();
             }
         });
-        setSupportActionBar(tool_bar);
-        viewPager.setOffscreenPageLimit(5);
-        mKinveyClient = new Client.Builder(CCU_Details.getSingletonContext().getApplicationContext()).build();
-        viewPager.setAdapter(new MyPagerAdapter(getSupportFragmentManager()));
+//        setSupportActionBar(tool_bar);
 
+
+        if (Build.VERSION.SDK_INT >= 23) {
+            if (ContextCompat.checkSelfPermission(CCU_Details.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(CCU_Details.this, android.Manifest.permission.READ_EXTERNAL_STORAGE)
+                    != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(CCU_Details.this,
+                        new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE, android.Manifest.permission.READ_EXTERNAL_STORAGE},
+                        1);
+            }
+        }
+
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        _singleton = this;
+        sqLliteAdapter = new SQLliteAdapter(CCU_Details.this);
+        viewPager.setOffscreenPageLimit(5);
+        viewPager.setAdapter(new MyPagerAdapter(getSupportFragmentManager()));
         bSummary.setOnClickListener(this);
         bDatalog.setOnClickListener(this);
         bSystem.setOnClickListener(this);
@@ -92,7 +121,6 @@ public class CCU_Details extends AppCompatActivity implements View.OnClickListen
         bNotes.setOnClickListener(this);
         ccuname = getIntent().getStringExtra("CcuData");
         ccuid = getIntent().getStringExtra("ccu_id");
-
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -109,38 +137,37 @@ public class CCU_Details extends AppCompatActivity implements View.OnClickListen
 
             }
         });
-
     }
 
-
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
     public void onClick(View v) {
 
         switch (v.getId()) {
             case (R.id.bSummary):
                 bSummary.setTextColor(getResources().getColor(R.color.primary));
-                bSummary.setCompoundDrawablesRelativeWithIntrinsicBounds(null,getResources().getDrawable(R.mipmap.summaryc),null,null);
+                bSummary.setCompoundDrawablesRelativeWithIntrinsicBounds(null, getResources().getDrawable(R.mipmap.summaryc), null, null);
                 bDatalog.setTextColor(getResources().getColor(R.color.gray));
-                bDatalog.setCompoundDrawablesRelativeWithIntrinsicBounds(null,getResources().getDrawable(R.mipmap.datalog),null,null);
+                bDatalog.setCompoundDrawablesRelativeWithIntrinsicBounds(null, getResources().getDrawable(R.mipmap.datalog), null, null);
                 bSystem.setTextColor(getResources().getColor(R.color.gray));
-                bSystem.setCompoundDrawablesRelativeWithIntrinsicBounds(null,getResources().getDrawable(R.mipmap.systemtest),null,null);
+                bSystem.setCompoundDrawablesRelativeWithIntrinsicBounds(null, getResources().getDrawable(R.mipmap.systemtest), null, null);
                 bDamper.setTextColor(getResources().getColor(R.color.gray));
-                bDamper.setCompoundDrawablesRelativeWithIntrinsicBounds(null,getResources().getDrawable(R.mipmap.damper),null,null);
+                bDamper.setCompoundDrawablesRelativeWithIntrinsicBounds(null, getResources().getDrawable(R.mipmap.damper), null, null);
                 bNotes.setTextColor(getResources().getColor(R.color.gray));
-                bNotes.setCompoundDrawablesRelativeWithIntrinsicBounds(null,getResources().getDrawable(R.mipmap.notes),null,null);
+                bNotes.setCompoundDrawablesRelativeWithIntrinsicBounds(null, getResources().getDrawable(R.mipmap.notes), null, null);
                 viewPager.setCurrentItem(0, false);
                 break;
             case (R.id.bDatalog):
                 bSummary.setTextColor(getResources().getColor(R.color.gray));
-                bSummary.setCompoundDrawablesRelativeWithIntrinsicBounds(null,getResources().getDrawable(R.mipmap.summary),null,null);
+                bSummary.setCompoundDrawablesRelativeWithIntrinsicBounds(null, getResources().getDrawable(R.mipmap.summary), null, null);
                 bDatalog.setTextColor(getResources().getColor(R.color.primary));
-                bDatalog.setCompoundDrawablesRelativeWithIntrinsicBounds(null,getResources().getDrawable(R.mipmap.datalogc),null,null);
+                bDatalog.setCompoundDrawablesRelativeWithIntrinsicBounds(null, getResources().getDrawable(R.mipmap.datalogc), null, null);
                 bSystem.setTextColor(getResources().getColor(R.color.gray));
-                bSystem.setCompoundDrawablesRelativeWithIntrinsicBounds(null,getResources().getDrawable(R.mipmap.systemtest),null,null);
+                bSystem.setCompoundDrawablesRelativeWithIntrinsicBounds(null, getResources().getDrawable(R.mipmap.systemtest), null, null);
                 bDamper.setTextColor(getResources().getColor(R.color.gray));
-                bDamper.setCompoundDrawablesRelativeWithIntrinsicBounds(null,getResources().getDrawable(R.mipmap.damper),null,null);
+                bDamper.setCompoundDrawablesRelativeWithIntrinsicBounds(null, getResources().getDrawable(R.mipmap.damper), null, null);
                 bNotes.setTextColor(getResources().getColor(R.color.gray));
-                bNotes.setCompoundDrawablesRelativeWithIntrinsicBounds(null,getResources().getDrawable(R.mipmap.notes),null,null);
+                bNotes.setCompoundDrawablesRelativeWithIntrinsicBounds(null, getResources().getDrawable(R.mipmap.notes), null, null);
                 viewPager.setCurrentItem(1, false);
                 break;
             case (R.id.bSystem):
@@ -151,15 +178,15 @@ public class CCU_Details extends AppCompatActivity implements View.OnClickListen
                 break;
             case (R.id.bNotes):
                 bSummary.setTextColor(getResources().getColor(R.color.gray));
-                bSummary.setCompoundDrawablesRelativeWithIntrinsicBounds(null,getResources().getDrawable(R.mipmap.summary),null,null);
+                bSummary.setCompoundDrawablesRelativeWithIntrinsicBounds(null, getResources().getDrawable(R.mipmap.summary), null, null);
                 bDatalog.setTextColor(getResources().getColor(R.color.gray));
-                bDatalog.setCompoundDrawablesRelativeWithIntrinsicBounds(null,getResources().getDrawable(R.mipmap.datalog),null,null);
+                bDatalog.setCompoundDrawablesRelativeWithIntrinsicBounds(null, getResources().getDrawable(R.mipmap.datalog), null, null);
                 bSystem.setTextColor(getResources().getColor(R.color.gray));
-                bSystem.setCompoundDrawablesRelativeWithIntrinsicBounds(null,getResources().getDrawable(R.mipmap.systemtest),null,null);
+                bSystem.setCompoundDrawablesRelativeWithIntrinsicBounds(null, getResources().getDrawable(R.mipmap.systemtest), null, null);
                 bDamper.setTextColor(getResources().getColor(R.color.gray));
-                bDamper.setCompoundDrawablesRelativeWithIntrinsicBounds(null,getResources().getDrawable(R.mipmap.damper),null,null);
+                bDamper.setCompoundDrawablesRelativeWithIntrinsicBounds(null, getResources().getDrawable(R.mipmap.damper), null, null);
                 bNotes.setTextColor(getResources().getColor(R.color.primary));
-                bNotes.setCompoundDrawablesRelativeWithIntrinsicBounds(null,getResources().getDrawable(R.mipmap.notesc),null,null);
+                bNotes.setCompoundDrawablesRelativeWithIntrinsicBounds(null, getResources().getDrawable(R.mipmap.notesc), null, null);
                 viewPager.setCurrentItem(4, false);
                 break;
         }
@@ -177,6 +204,13 @@ public class CCU_Details extends AppCompatActivity implements View.OnClickListen
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.logout:
+                Thread h = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        sqLliteAdapter.updateEntire();
+                    }
+                });
+                h.run();
                 SharedPreferences prefs = CCU_Details.this.getSharedPreferences("login", Context.MODE_PRIVATE);
                 prefs.edit().clear().apply();
                 Intent i1 = new Intent(CCU_Details.this, MainActivity.class);
@@ -250,13 +284,14 @@ public class CCU_Details extends AppCompatActivity implements View.OnClickListen
         Query newquery = new Query();
         newquery.equals("_id", ccuid);
         if (Generic_Methods.isNetworkAvailable(CCU_Details.getSingletonContext())) {
-            AsyncAppData<GenericJson> summary = CCU_Details.mKinveyClient.appData("00CCUOneTimePassword", GenericJson.class);
+            AsyncAppData<GenericJson> summary = Generic_Methods.getKinveyClient().appData("00CCUOneTimePassword", GenericJson.class);
             summary.get(newquery, new KinveyListCallback<GenericJson>() {
+                @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
                 @Override
                 public void onSuccess(GenericJson[] genericJsons) {
                     try {
                         if (genericJsons.length == 0) {
-                            Otp_Verification otp_verification = new Otp_Verification(CCU_Details.getSingletonContext(), ccuid);
+                            Otp_Verification otp_verification = new Otp_Verification(CCU_Details.getSingletonContext(), ccuid, x);
                             otp_verification.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                             otp_verification.show();
                             sqLliteAdapter.update(ccuid, 0);
@@ -264,33 +299,36 @@ public class CCU_Details extends AppCompatActivity implements View.OnClickListen
 
                             try {
                                 JSONObject s = new JSONObject(genericJsons[0].toString());
-                                if (s.getString("oneTimePassword") != null) {
+                                if (s.getString("oneTimePassword") != null && sqLliteAdapter.getdata(ccuid) == 1) {
                                     viewPager.setCurrentItem(x, false);
-                                    if(x == 2){
+                                    if (x == 2) {
                                         bSummary.setTextColor(getResources().getColor(R.color.gray));
-                                        bSummary.setCompoundDrawablesRelativeWithIntrinsicBounds(null,getResources().getDrawable(R.mipmap.summary),null,null);
+                                        bSummary.setCompoundDrawablesRelativeWithIntrinsicBounds(null, getResources().getDrawable(R.mipmap.summary), null, null);
                                         bDatalog.setTextColor(getResources().getColor(R.color.gray));
-                                        bDatalog.setCompoundDrawablesRelativeWithIntrinsicBounds(null,getResources().getDrawable(R.mipmap.datalog),null,null);
+                                        bDatalog.setCompoundDrawablesRelativeWithIntrinsicBounds(null, getResources().getDrawable(R.mipmap.datalog), null, null);
                                         bSystem.setTextColor(getResources().getColor(R.color.primary));
-                                        bSystem.setCompoundDrawablesRelativeWithIntrinsicBounds(null,getResources().getDrawable(R.mipmap.systemtestc),null,null);
+                                        bSystem.setCompoundDrawablesRelativeWithIntrinsicBounds(null, getResources().getDrawable(R.mipmap.systemtestc), null, null);
                                         bDamper.setTextColor(getResources().getColor(R.color.gray));
-                                        bDamper.setCompoundDrawablesRelativeWithIntrinsicBounds(null,getResources().getDrawable(R.mipmap.damper),null,null);
+                                        bDamper.setCompoundDrawablesRelativeWithIntrinsicBounds(null, getResources().getDrawable(R.mipmap.damper), null, null);
                                         bNotes.setTextColor(getResources().getColor(R.color.gray));
-                                        bNotes.setCompoundDrawablesRelativeWithIntrinsicBounds(null,getResources().getDrawable(R.mipmap.notes),null,null);
-                                    }else{
+                                        bNotes.setCompoundDrawablesRelativeWithIntrinsicBounds(null, getResources().getDrawable(R.mipmap.notes), null, null);
+                                    } else {
                                         bSummary.setTextColor(getResources().getColor(R.color.gray));
-                                        bSummary.setCompoundDrawablesRelativeWithIntrinsicBounds(null,getResources().getDrawable(R.mipmap.summary),null,null);
+                                        bSummary.setCompoundDrawablesRelativeWithIntrinsicBounds(null, getResources().getDrawable(R.mipmap.summary), null, null);
                                         bDatalog.setTextColor(getResources().getColor(R.color.gray));
-                                        bDatalog.setCompoundDrawablesRelativeWithIntrinsicBounds(null,getResources().getDrawable(R.mipmap.datalog),null,null);
+                                        bDatalog.setCompoundDrawablesRelativeWithIntrinsicBounds(null, getResources().getDrawable(R.mipmap.datalog), null, null);
                                         bSystem.setTextColor(getResources().getColor(R.color.gray));
-                                        bSystem.setCompoundDrawablesRelativeWithIntrinsicBounds(null,getResources().getDrawable(R.mipmap.systemtest),null,null);
+                                        bSystem.setCompoundDrawablesRelativeWithIntrinsicBounds(null, getResources().getDrawable(R.mipmap.systemtest), null, null);
                                         bDamper.setTextColor(getResources().getColor(R.color.primary));
-                                        bDamper.setCompoundDrawablesRelativeWithIntrinsicBounds(null,getResources().getDrawable(R.mipmap.damperc),null,null);
+                                        bDamper.setCompoundDrawablesRelativeWithIntrinsicBounds(null, getResources().getDrawable(R.mipmap.damperc), null, null);
                                         bNotes.setTextColor(getResources().getColor(R.color.gray));
-                                        bNotes.setCompoundDrawablesRelativeWithIntrinsicBounds(null,getResources().getDrawable(R.mipmap.notes),null,null);
+                                        bNotes.setCompoundDrawablesRelativeWithIntrinsicBounds(null, getResources().getDrawable(R.mipmap.notes), null, null);
                                     }
                                 } else {
                                     sqLliteAdapter.update(ccuid, 0);
+                                    Otp_Verification otp_verification = new Otp_Verification(CCU_Details.getSingletonContext(), ccuid, x);
+                                    otp_verification.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                                    otp_verification.show();
                                 }
 
                             } catch (Exception e) {
@@ -299,7 +337,7 @@ public class CCU_Details extends AppCompatActivity implements View.OnClickListen
                         }
 
                     } catch (Exception e) {
-                        Otp_Verification otp_verification = new Otp_Verification(CCU_Details.getSingletonContext(), ccuid);
+                        Otp_Verification otp_verification = new Otp_Verification(CCU_Details.getSingletonContext(), ccuid, x);
                         otp_verification.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                         otp_verification.show();
                         sqLliteAdapter.update(ccuid, 0);
@@ -310,7 +348,7 @@ public class CCU_Details extends AppCompatActivity implements View.OnClickListen
                 @Override
                 public void onFailure(Throwable throwable) {
 
-                    Otp_Verification otp_verification = new Otp_Verification(CCU_Details.getSingletonContext(), ccuid);
+                    Otp_Verification otp_verification = new Otp_Verification(CCU_Details.getSingletonContext(), ccuid, x);
                     otp_verification.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                     otp_verification.show();
                     sqLliteAdapter.update(ccuid, 0);
@@ -324,5 +362,30 @@ public class CCU_Details extends AppCompatActivity implements View.OnClickListen
     }
 
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Generic_Methods.createEditSummarySharedPreference(CCU_Details.getSingletonContext(), "");
+        Generic_Methods.createEditDataLogSharedPreference(CCU_Details.getSingletonContext(), "");
+        Generic_Methods.PauseCalled();
+        Generic_Methods.PauseCalled1();
+
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Generic_Methods.h.removeCallbacks(Generic_Methods.mThraed);
+
+        Thread h = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Generic_Methods.unbindDrawables(findViewById(R.id.main_layout));
+            }
+        });
+        h.start();
+
+    }
 }
 

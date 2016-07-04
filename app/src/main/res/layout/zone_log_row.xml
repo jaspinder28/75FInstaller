@@ -1,12 +1,416 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/main_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <LinearLayout
+        android:id="@+id/llzone"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:background="@color/light_gray"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tvCCUName"
+            android:layout_width="140dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="16dp"
+            android:maxLines="1"
+            android:text="CCU Name       "
+            android:textColor="@android:color/black"
+            android:textSize="17sp" />
+
+        <TextView
+            android:id="@+id/timezone"
+            android:layout_width="210dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="16dp"
+            android:text="2016-06-01"
+            android:textColor="@android:color/black"
+            android:textSize="17sp" />
+    </LinearLayout>
+
     <TableLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="5dp"
+        android:stretchColumns="*">
+
+        <TableRow
+            android:id="@+id/tableRow1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/llzone">
+
+            <TextView
+                android:id="@+id/tvMode1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_weight="1"
+                android:text="CurrentMode:"
+                android:textColor="@android:color/black"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tvMode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_weight="1"
+                android:textColor="@android:color/black"
+                android:textSize="14sp" />
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/tableRow2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/llzone">
+
+            <TextView
+                android:id="@+id/tvEnthaply1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_weight="1"
+                android:text="Enthalpy In/Out:"
+                android:textColor="@android:color/black"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tvEnthaply"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_weight="1"
+                android:textColor="@android:color/black"
+                android:textSize="14sp" />
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/tableRow3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/llzone">
+
+            <TextView
+                android:id="@+id/tvOutsideTemp1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_weight="1"
+                android:text="Outside Temp:"
+                android:textColor="@android:color/black"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tvOutsideTemp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_weight="1"
+                android:textColor="@android:color/black"
+                android:textSize="14sp" />
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/tableRow4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/llzone">
+
+            <TextView
+                android:id="@+id/tvOutsideDamper1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_weight="1"
+                android:text="Outside Air Damper:"
+                android:textColor="@android:color/black"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tvOutsideDamper"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_weight="1"
+                android:textColor="@android:color/black"
+                android:textSize="14sp" />
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/tableRow5"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/llzone">
+
+            <TextView
+                android:id="@+id/tvCO2Level1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_weight="1"
+                android:text="CO2 Level:"
+                android:textColor="@android:color/black"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tvCO2Level"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_weight="1"
+                android:textColor="@android:color/black"
+                android:textSize="14sp" />
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/tableRow6"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/llzone">
+
+            <TextView
+                android:id="@+id/tvEcon1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_weight="1"
+                android:text="Econ Avail./Used:"
+                android:textColor="@android:color/black"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tvEcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_weight="1"
+                android:textColor="@android:color/black"
+                android:textSize="14sp" />
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/tableRow7"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/llzone">
+
+            <TextView
+                android:id="@+id/tvMat1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_weight="1"
+                android:text="MAT/RAT:"
+                android:textColor="@android:color/black"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tvMat"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_weight="1"
+                android:textColor="@android:color/black"
+                android:textSize="14sp" />
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/tableRow8"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/llzone">
+
+            <TextView
+                android:id="@+id/tvComfort1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_weight="1"
+                android:text="Comfort Index:"
+                android:textColor="@android:color/black"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tvComfortx"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_weight="1"
+                android:textColor="@android:color/black"
+                android:textSize="14sp" />
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/tableRow9"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/llzone">
+
+            <TextView
+                android:id="@+id/tvCOLevel1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_weight="1"
+                android:text="CO Level:"
+                android:textColor="@android:color/black"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tvCOLevel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_weight="1"
+                android:textColor="@android:color/black"
+                android:textSize="14sp" />
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/tableRow10"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/llzone">
+
+            <TextView
+                android:id="@+id/tvNO2Level1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_weight="1"
+                android:text="NO2 Level:"
+                android:textColor="@android:color/black"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tvNO2Level"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_weight="1"
+                android:textColor="@android:color/black"
+                android:textSize="14sp" />
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/tableRow11"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/llzone">
+
+            <TextView
+                android:id="@+id/tvPressureSensor1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_weight="1"
+                android:text="PressureSensor:"
+                android:textColor="@android:color/black"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tvPressureSensor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_weight="2"
+                android:textColor="@android:color/black"
+                android:textSize="14sp" />
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/tableRow12"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/llzone">
+
+            <TextView
+                android:id="@+id/tvHVAC"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="16dp"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:text="HVAC Equipment:"
+                android:textColor="@android:color/black"
+                android:textSize="14sp" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvHVACDetail1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="16dp"
+                    android:layout_weight="2"
+                    android:textColor="@android:color/black"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/tvHVACDetail2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="16dp"
+                    android:layout_weight="2"
+                    android:textColor="@android:color/black"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/tvHVACDetail3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="16dp"
+                    android:layout_weight="2"
+                    android:textColor="@android:color/black"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/tvHVACDetail4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="16dp"
+                    android:layout_weight="2"
+                    android:textColor="@android:color/black"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/tvHVACDetail5"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="16dp"
+                    android:layout_weight="2"
+                    android:textColor="@android:color/black"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/tvHVACDetail6"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="16dp"
+                    android:layout_weight="2"
+                    android:textColor="@android:color/black"
+                    android:textSize="14sp" />
+            </LinearLayout>
+        </TableRow>
+    </TableLayout>
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
         android:stretchColumns="*">
 
         <TableRow
@@ -21,9 +425,10 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
                 android:layout_weight="1"
+                android:maxLines="1"
                 android:text="Zone"
                 android:textColor="@android:color/black"
-                android:textSize="14sp" />
+                android:textSize="12sp" />
 
             <TextView
                 android:id="@+id/tvComf"
@@ -31,9 +436,10 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
                 android:layout_weight="1"
+                android:maxLines="1"
                 android:text="Schedule"
                 android:textColor="@android:color/black"
-                android:textSize="14sp" />
+                android:textSize="12sp" />
 
             <TextView
                 android:id="@+id/temperature"
@@ -41,9 +447,10 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
                 android:layout_weight="1"
+                android:maxLines="1"
                 android:text="Temparature"
                 android:textColor="@android:color/black"
-                android:textSize="14sp" />
+                android:textSize="12sp" />
 
             <TextView
                 android:id="@+id/damp"
@@ -51,9 +458,10 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
                 android:layout_weight="1"
+                android:maxLines="1"
                 android:text="Damper Position"
                 android:textColor="@android:color/black"
-                android:textSize="14sp" />
+                android:textSize="12sp" />
         </TableRow>
 
         <TableRow
@@ -68,6 +476,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
                 android:layout_weight="1"
+                android:maxLines="1"
                 android:textColor="@android:color/black"
                 android:textSize="14sp" />
 
@@ -77,6 +486,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
                 android:layout_weight="1"
+                android:maxLines="1"
                 android:textColor="@android:color/black"
                 android:textSize="14sp" />
 
@@ -86,6 +496,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
                 android:layout_weight="1"
+                android:maxLines="1"
                 android:textColor="@android:color/black"
                 android:textSize="14sp" />
 
@@ -95,6 +506,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
                 android:layout_weight="1"
+                android:maxLines="1"
                 android:textColor="@android:color/black"
                 android:textSize="14sp" />
         </TableRow>
@@ -111,15 +523,17 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
                 android:layout_weight="1"
+                android:maxLines="1"
                 android:textColor="@android:color/black"
                 android:textSize="14sp" />
 
             <TextView
-                android:id="@+id/tvComfort1"
+                android:id="@+id/tvComfort111"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
                 android:layout_weight="1"
+                android:maxLines="1"
                 android:textColor="@android:color/black"
                 android:textSize="14sp" />
 
@@ -129,6 +543,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
                 android:layout_weight="1"
+                android:maxLines="1"
                 android:textColor="@android:color/black"
                 android:textSize="14sp" />
 
@@ -138,6 +553,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
                 android:layout_weight="1"
+                android:maxLines="1"
                 android:textColor="@android:color/black"
                 android:textSize="14sp" />
         </TableRow>
@@ -154,6 +570,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
                 android:layout_weight="1"
+                android:maxLines="1"
                 android:textColor="@android:color/black"
                 android:textSize="14sp" />
 
@@ -163,6 +580,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
                 android:layout_weight="1"
+                android:maxLines="1"
                 android:textColor="@android:color/black"
                 android:textSize="14sp" />
 
@@ -172,6 +590,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
                 android:layout_weight="1"
+                android:maxLines="1"
                 android:textColor="@android:color/black"
                 android:textSize="14sp" />
 
@@ -181,6 +600,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
                 android:layout_weight="1"
+                android:maxLines="1"
                 android:textColor="@android:color/black"
                 android:textSize="14sp" />
         </TableRow>
@@ -197,6 +617,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
                 android:layout_weight="1"
+                android:maxLines="1"
                 android:textColor="@android:color/black"
                 android:textSize="14sp" />
 
@@ -206,6 +627,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
                 android:layout_weight="1"
+                android:maxLines="1"
                 android:textColor="@android:color/black"
                 android:textSize="14sp" />
 
@@ -215,6 +637,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
                 android:layout_weight="1"
+                android:maxLines="1"
                 android:textColor="@android:color/black"
                 android:textSize="14sp" />
 
@@ -224,6 +647,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
                 android:layout_weight="1"
+                android:maxLines="1"
                 android:textColor="@android:color/black"
                 android:textSize="14sp" />
         </TableRow>
@@ -240,6 +664,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
                 android:layout_weight="1"
+                android:maxLines="1"
                 android:textColor="@android:color/black"
                 android:textSize="14sp" />
 
@@ -249,6 +674,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
                 android:layout_weight="1"
+                android:maxLines="1"
                 android:textColor="@android:color/black"
                 android:textSize="14sp" />
 
@@ -258,6 +684,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
                 android:layout_weight="1"
+                android:maxLines="1"
                 android:textColor="@android:color/black"
                 android:textSize="14sp" />
 
@@ -267,6 +694,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
                 android:layout_weight="1"
+                android:maxLines="1"
                 android:textColor="@android:color/black"
                 android:textSize="14sp" />
         </TableRow>
@@ -283,6 +711,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
                 android:layout_weight="1"
+                android:maxLines="1"
                 android:textColor="@android:color/black"
                 android:textSize="14sp" />
 
@@ -292,6 +721,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
                 android:layout_weight="1"
+                android:maxLines="1"
                 android:textColor="@android:color/black"
                 android:textSize="14sp" />
 
@@ -301,6 +731,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
                 android:layout_weight="1"
+                android:maxLines="1"
                 android:textColor="@android:color/black"
                 android:textSize="14sp" />
 
@@ -310,6 +741,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
                 android:layout_weight="1"
+                android:maxLines="1"
                 android:textColor="@android:color/black"
                 android:textSize="14sp" />
         </TableRow>
@@ -326,6 +758,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
                 android:layout_weight="1"
+                android:maxLines="1"
                 android:textColor="@android:color/black"
                 android:textSize="14sp" />
 
@@ -335,6 +768,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
                 android:layout_weight="1"
+                android:maxLines="1"
                 android:textColor="@android:color/black"
                 android:textSize="14sp" />
 
@@ -344,6 +778,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
                 android:layout_weight="1"
+                android:maxLines="1"
                 android:textColor="@android:color/black"
                 android:textSize="14sp" />
 
@@ -353,6 +788,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
                 android:layout_weight="1"
+                android:maxLines="1"
                 android:textColor="@android:color/black"
                 android:textSize="14sp" />
         </TableRow>
@@ -369,6 +805,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
                 android:layout_weight="1"
+                android:maxLines="1"
                 android:textColor="@android:color/black"
                 android:textSize="14sp" />
 
@@ -378,6 +815,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
                 android:layout_weight="1"
+                android:maxLines="1"
                 android:textColor="@android:color/black"
                 android:textSize="14sp" />
 
@@ -387,6 +825,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
                 android:layout_weight="1"
+                android:maxLines="1"
                 android:textColor="@android:color/black"
                 android:textSize="14sp" />
 
@@ -396,6 +835,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
                 android:layout_weight="1"
+                android:maxLines="1"
                 android:textColor="@android:color/black"
                 android:textSize="14sp" />
         </TableRow>
@@ -412,6 +852,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
                 android:layout_weight="1"
+                android:maxLines="1"
                 android:textColor="@android:color/black"
                 android:textSize="14sp" />
 
@@ -421,6 +862,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
                 android:layout_weight="1"
+                android:maxLines="1"
                 android:textColor="@android:color/black"
                 android:textSize="14sp" />
 
@@ -430,6 +872,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
                 android:layout_weight="1"
+                android:maxLines="1"
                 android:textColor="@android:color/black"
                 android:textSize="14sp" />
 
@@ -439,6 +882,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
                 android:layout_weight="1"
+                android:maxLines="1"
                 android:textColor="@android:color/black"
                 android:textSize="14sp" />
         </TableRow>
@@ -455,6 +899,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
                 android:layout_weight="1"
+                android:maxLines="1"
                 android:textColor="@android:color/black"
                 android:textSize="14sp" />
 
@@ -464,6 +909,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
                 android:layout_weight="1"
+                android:maxLines="1"
                 android:textColor="@android:color/black"
                 android:textSize="14sp" />
 
@@ -473,6 +919,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
                 android:layout_weight="1"
+                android:maxLines="1"
                 android:textColor="@android:color/black"
                 android:textSize="14sp" />
 
@@ -482,6 +929,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
                 android:layout_weight="1"
+                android:maxLines="1"
                 android:textColor="@android:color/black"
                 android:textSize="14sp" />
         </TableRow>

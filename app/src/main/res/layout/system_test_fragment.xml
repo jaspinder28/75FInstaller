@@ -2,6 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/main_layout"
     android:orientation="vertical">
 
     <ScrollView
@@ -15,7 +16,7 @@
             <RelativeLayout
                 android:id="@+id/row"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="40dp"
                 android:background="@color/light_gray"
                 android:orientation="horizontal">
 
@@ -32,7 +33,7 @@
                 <Button
                     android:id="@+id/test"
                     android:layout_width="wrap_content"
-                    android:layout_height="50dp"
+                    android:layout_height="40dp"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
                     android:background="@drawable/border"
@@ -45,7 +46,7 @@
             <RelativeLayout
                 android:id="@+id/row1"
                 android:layout_width="match_parent"
-                android:layout_height="70dp"
+                android:layout_height="45dp"
                 android:layout_marginLeft="16dp"
                 android:layout_below="@+id/row"
                 android:layout_marginRight="16dp"
@@ -64,7 +65,7 @@
                 <Button
                     android:id="@+id/coolingStage1"
                     android:layout_width="wrap_content"
-                    android:layout_height="50dp"
+                    android:layout_height="40dp"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
                     android:background="@drawable/border"
@@ -74,18 +75,18 @@
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_below="@+id/coolingStage1"
-                    android:layout_marginTop="5dp"
+                    android:layout_marginTop="2dp"
                     android:background="@color/light_gray" />
             </RelativeLayout>
 
             <RelativeLayout
                 android:id="@+id/row2"
                 android:layout_width="match_parent"
-                android:layout_height="70dp"
+                android:layout_height="45dp"
                 android:layout_below="@+id/row1"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
-                android:layout_marginTop="5dp"
+                android:layout_marginTop="2dp"
                 android:orientation="horizontal">
 
                 <TextView
@@ -100,7 +101,7 @@
                 <Button
                     android:id="@+id/coolingStage2"
                     android:layout_width="wrap_content"
-                    android:layout_height="50dp"
+                    android:layout_height="40dp"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
                     android:background="@drawable/border"
@@ -110,18 +111,18 @@
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_below="@+id/coolingStage2"
-                    android:layout_marginTop="5dp"
+                    android:layout_marginTop="2dp"
                     android:background="@color/light_gray" />
             </RelativeLayout>
 
             <RelativeLayout
                 android:id="@+id/row3"
                 android:layout_width="match_parent"
-                android:layout_height="70dp"
+                android:layout_height="45dp"
                 android:layout_below="@+id/row2"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
-                android:layout_marginTop="5dp"
+                android:layout_marginTop="2dp"
                 android:orientation="horizontal">
 
                 <TextView
@@ -136,7 +137,7 @@
                 <Button
                     android:id="@+id/fanStage1"
                     android:layout_width="wrap_content"
-                    android:layout_height="50dp"
+                    android:layout_height="40dp"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
                     android:background="@drawable/border"
@@ -146,18 +147,18 @@
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_below="@+id/fanStage1"
-                    android:layout_marginTop="5dp"
+                    android:layout_marginTop="2dp"
                     android:background="@color/light_gray" />
             </RelativeLayout>
 
             <RelativeLayout
                 android:id="@+id/row4"
                 android:layout_width="match_parent"
-                android:layout_height="70dp"
+                android:layout_height="45dp"
                 android:layout_below="@+id/row3"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
-                android:layout_marginTop="5dp"
+                android:layout_marginTop="2dp"
                 android:orientation="horizontal">
 
                 <TextView
@@ -172,7 +173,7 @@
                 <Button
                     android:id="@+id/fanStage2"
                     android:layout_width="wrap_content"
-                    android:layout_height="50dp"
+                    android:layout_height="40dp"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
                     android:background="@drawable/border"
@@ -182,18 +183,18 @@
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_below="@+id/fanStage2"
-                    android:layout_marginTop="5dp"
+                    android:layout_marginTop="2dp"
                     android:background="@color/light_gray" />
             </RelativeLayout>
 
             <RelativeLayout
                 android:id="@+id/row5"
                 android:layout_width="match_parent"
-                android:layout_height="70dp"
+                android:layout_height="45dp"
                 android:layout_below="@+id/row4"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
-                android:layout_marginTop="5dp"
+                android:layout_marginTop="2dp"
                 android:orientation="horizontal">
 
                 <TextView
@@ -208,7 +209,7 @@
                 <Button
                     android:id="@+id/heatingStage1"
                     android:layout_width="wrap_content"
-                    android:layout_height="50dp"
+                    android:layout_height="40dp"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
                     android:background="@drawable/border"
@@ -218,7 +219,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_below="@+id/heatingStage1"
-                    android:layout_marginTop="5dp"
+                    android:layout_marginTop="2dp"
                     android:background="@color/light_gray" />
 
             </RelativeLayout>
@@ -226,11 +227,11 @@
             <RelativeLayout
                 android:id="@+id/row6"
                 android:layout_width="match_parent"
-                android:layout_height="70dp"
+                android:layout_height="45dp"
                 android:layout_below="@+id/row5"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
-                android:layout_marginTop="5dp"
+                android:layout_marginTop="2dp"
                 android:orientation="horizontal">
 
                 <TextView
@@ -245,7 +246,7 @@
                 <Button
                     android:id="@+id/heatingStage2"
                     android:layout_width="wrap_content"
-                    android:layout_height="50dp"
+                    android:layout_height="40dp"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
                     android:background="@drawable/border"
@@ -255,18 +256,18 @@
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_below="@+id/heatingStage2"
-                    android:layout_marginTop="5dp"
+                    android:layout_marginTop="2dp"
                     android:background="@color/light_gray" />
             </RelativeLayout>
 
             <RelativeLayout
                 android:id="@+id/row7"
                 android:layout_width="match_parent"
-                android:layout_height="70dp"
+                android:layout_height="45dp"
                 android:layout_below="@+id/row6"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
-                android:layout_marginTop="5dp"
+                android:layout_marginTop="2dp"
                 android:orientation="horizontal">
 
                 <TextView
@@ -281,7 +282,7 @@
                 <Button
                     android:id="@+id/humidifier"
                     android:layout_width="wrap_content"
-                    android:layout_height="50dp"
+                    android:layout_height="40dp"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
                     android:background="@drawable/border"
@@ -291,18 +292,18 @@
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_below="@+id/humidifier"
-                    android:layout_marginTop="5dp"
+                    android:layout_marginTop="2dp"
                     android:background="@color/light_gray" />
             </RelativeLayout>
 
             <RelativeLayout
                 android:id="@+id/row8"
                 android:layout_width="match_parent"
-                android:layout_height="70dp"
+                android:layout_height="45dp"
                 android:layout_below="@+id/row7"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
-                android:layout_marginTop="5dp"
+                android:layout_marginTop="2dp"
                 android:orientation="horizontal">
 
                 <TextView
@@ -314,30 +315,40 @@
                     android:textColor="@color/black"
                     android:textSize="18sp" />
 
-                <NumberPicker
+                <!--<com.x75f.installer.Utils.Number_Picker-->
+                    <!--android:id="@+id/analog1"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="40dp"-->
+                    <!--android:focusable="false"-->
+                    <!--android:descendantFocusability="blocksDescendants"-->
+                    <!--android:showDividers="middle"-->
+                    <!--android:focusableInTouchMode="false"-->
+                    <!--android:layout_alignParentRight="true"-->
+                    <!--android:layout_centerVertical="true"-->
+                     <!--/>-->
+                <Spinner
+                    android:layout_width="60dp"
+                    android:layout_height="40dp"
                     android:id="@+id/analog1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="55dp"
                     android:background="@drawable/border"
                     android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"
-                     />
+                    android:layout_centerVertical="true"></Spinner>
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_below="@+id/analog1"
-                    android:layout_marginTop="5dp"
+                    android:layout_marginTop="2dp"
                     android:background="@color/light_gray" />
             </RelativeLayout>
             <RelativeLayout
                 android:id="@+id/row9"
                 android:layout_width="match_parent"
-                android:layout_height="70dp"
+                android:layout_height="45dp"
                 android:layout_below="@+id/row8"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
-                android:layout_marginTop="5dp"
+                android:layout_marginTop="2dp"
                 android:orientation="horizontal">
 
                 <TextView
@@ -349,30 +360,30 @@
                     android:textColor="@color/black"
                     android:textSize="18sp" />
 
-                <NumberPicker
+                <Spinner
+                    android:layout_width="60dp"
+                    android:layout_height="40dp"
                     android:id="@+id/analog2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="55dp"
                     android:background="@drawable/border"
                     android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"
+                    android:layout_centerVertical="true"></Spinner>
                      />
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_below="@+id/analog2"
-                    android:layout_marginTop="5dp"
+                    android:layout_marginTop="2dp"
                     android:background="@color/light_gray" />
             </RelativeLayout>
             <RelativeLayout
                 android:id="@+id/row10"
                 android:layout_width="match_parent"
-                android:layout_height="70dp"
+                android:layout_height="45dp"
                 android:layout_below="@+id/row9"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
-                android:layout_marginTop="5dp"
+                android:layout_marginTop="2dp"
                 android:orientation="horizontal">
 
                 <TextView
@@ -384,30 +395,30 @@
                     android:textColor="@color/black"
                     android:textSize="18sp" />
 
-                <NumberPicker
+                <Spinner
+                    android:layout_width="60dp"
+                    android:layout_height="40dp"
                     android:id="@+id/analog3"
-                    android:layout_width="wrap_content"
-                    android:layout_height="55dp"
                     android:background="@drawable/border"
                     android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"
+                    android:layout_centerVertical="true"></Spinner>
                      />
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_below="@+id/analog3"
-                    android:layout_marginTop="5dp"
+                    android:layout_marginTop="2dp"
                     android:background="@color/light_gray" />
             </RelativeLayout>
             <RelativeLayout
                 android:id="@+id/row11"
                 android:layout_width="match_parent"
-                android:layout_height="70dp"
+                android:layout_height="45dp"
                 android:layout_below="@+id/row10"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
-                android:layout_marginTop="5dp"
+                android:layout_marginTop="2dp"
                 android:orientation="horizontal">
 
                 <TextView
@@ -419,20 +430,20 @@
                     android:textColor="@color/black"
                     android:textSize="18sp" />
 
-                <NumberPicker
+                <Spinner
+                    android:layout_width="60dp"
+                    android:layout_height="40dp"
                     android:id="@+id/analog4"
-                    android:layout_width="wrap_content"
-                    android:layout_height="55dp"
                     android:background="@drawable/border"
                     android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"
+                    android:layout_centerVertical="true"></Spinner>
                      />
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_below="@+id/analog4"
-                    android:layout_marginTop="5dp"
+                    android:layout_marginTop="2dp"
                     android:background="@color/light_gray" />
             </RelativeLayout>
         </RelativeLayout>

@@ -10,11 +10,7 @@ public class Data_Log extends GenericJson {
     private int current_mode;
     @Key("env_enthalpy")
     private double env_enthalpy;
-
-
-
     @Key("inside_enthalpy")
-
     private double inside_enthalpy;
     @Key("operational_mode")
     private int operational_mode;
@@ -40,8 +36,21 @@ public class Data_Log extends GenericJson {
     private int fan_stage1_onoff;
     @Key("fan_stage2_onoff")
     private int fan_stage2_onoff;
+    @Key("heat_stage1_onoff")
+    private int heat_stage1_onoff;
+    @Key("heat_stage2_onoff")
+    private int heat_stage2_onoff;
     @Key("hvac_fan_stage1")
     private int hvac_fan_stage1;
+
+    public int getHeat_stage1_onoff() {
+        return heat_stage1_onoff;
+    }
+
+    public int getHeat_stage2_onoff() {
+        return heat_stage2_onoff;
+    }
+
     @Key("hvac_fan_stage2")
     private int hvac_fan_stage2;
     @Key("hvac_humidifier")
@@ -62,10 +71,7 @@ public class Data_Log extends GenericJson {
     private int hvac_analog4;
     @Key("hvac_analog4_type")
     private int hvac_analog4_type;
-
-
     @Key("comfort_index")
-
     private double comfort_index;
     @Key("econ_mixed_airflow_temp")
     private double econ_mixed_airflow_temp;
@@ -79,6 +85,90 @@ public class Data_Log extends GenericJson {
     private int dcv_co2_val;
     @Key("dcv_co2_limit")
     private int dcv_co2_limit;
+    @Key("co_limit")
+    private int co_limit;
+    @Key("co_value")
+    private int co_value;
+    @Key("no2_limit")
+    private int no2_limit;
+    @Key("no2_value")
+    private int no2_value;
+    @Key("dp_sensor_paired")
+    private int dp_sensor_paired;
+    @Key("dcv_sensor_paired")
+    private int dcv_sensor_paired;
+    @Key("dp_pressure")
+    private double dp_pressure;
+    @Key("dp_limit")
+    private double dp_limit;
+    @Key("co_sensor_paired")
+    private int co_sensor_paired;
+    @Key("no2_sensor_paired")
+    private int no2_sensor_paired;
+    @Key("analog1_damper_pos")
+    private int analog1_damper_pos;
+    @Key("analog2_damper_pos")
+    private int analog2_damper_pos;
+    @Key("analog3_damper_pos")
+    private int analog3_damper_pos;
+    @Key("analog4_damper_pos")
+    private int analog4_damper_pos;
+
+    public int getAnalog1_damper_pos() {
+        return analog1_damper_pos;
+    }
+
+    public int getAnalog2_damper_pos() {
+        return analog2_damper_pos;
+    }
+
+    public int getAnalog3_damper_pos() {
+        return analog3_damper_pos;
+    }
+
+    public int getAnalog4_damper_pos() {
+        return analog4_damper_pos;
+    }
+
+    public int getCo_sensor_paired() {
+        return co_sensor_paired;
+    }
+
+    public int getNo2_sensor_paired() {
+        return no2_sensor_paired;
+    }
+
+    public int getDcv_sensor_paired() {
+        return dcv_sensor_paired;
+    }
+
+    public int getDp_sensor_paired() {
+        return dp_sensor_paired;
+    }
+
+    public double getDp_pressure() {
+        return dp_pressure;
+    }
+
+    public double getDp_limit() {
+        return dp_limit;
+    }
+
+    public int getCo_limit() {
+        return co_limit;
+    }
+
+    public int getCo_value() {
+        return co_value;
+    }
+
+    public int getNo2_limit() {
+        return no2_limit;
+    }
+
+    public int getNo2_value() {
+        return no2_value;
+    }
 
     public String getDate_time() {
         return date_time;

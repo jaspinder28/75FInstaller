@@ -1,10 +1,12 @@
 <resources>
-    <string name="app_name">Installer</string>
+    <string name="app_name">75FInstaller</string>
     <string name="user_offline">You are offline.Please connect to the Internet.</string>
     <string name="otp_dialog">Please enter the \'One Time Password\' generated on the CCU.Go to installer options,in the settings on CCU to generate.If previous OTP is not functional,regenerate a new one.</string>
     <string name="email_empty">Please enter email address</string>
     <string name="password_empty">please enter password</string>
     <string name="wrong_login">Wrong user name or password</string>
     <string name="wrong_otp">Wrong OTP is entered.Please enter valid OTP.</string>
+    <string name="forgot_pass">Forgot Password?</string>
+    <string name="invalid_email">Please enter valid email Address.</string>
 
 </resources>

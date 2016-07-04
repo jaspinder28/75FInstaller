@@ -4,11 +4,25 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Handler;
 import android.util.Log;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.SearchView;
 import android.widget.Toast;
+
+import com.google.api.client.json.GenericJson;
+import com.kinvey.android.AsyncAppData;
+import com.kinvey.android.Client;
+import com.kinvey.android.callback.KinveyListCallback;
+import com.kinvey.java.Query;
+import com.kinvey.java.query.AbstractQuery;
 import com.pubnub.api.Callback;
 import com.pubnub.api.Pubnub;
 import com.pubnub.api.PubnubError;
+import com.x75f.installer.Activity.CCU_Details;
+import com.x75f.installer.Fragments.Summary_Fragment;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -22,8 +36,105 @@ import java.util.Calendar;
 public class Generic_Methods {
     private static Pubnub pubnub;
     public static boolean initialized = false;
+    private static Client mKinveyClient;
+    public static Handler h = new Handler();
+    public static Handler h1 = new Handler();
+    private static String ccuid;
+    private Generic_Methods mInstance;
+    public static Thread mThraed = new Thread(new Runnable() {
+        @Override
+        public void run() {
+            Query newquery = new Query();
+            newquery.equals("_id", ccuid);
+            AsyncAppData<GenericJson> summary = Generic_Methods.getKinveyClient().appData("00CCUSummary", GenericJson.class);
+            if (summary.isOnline()) {
+
+                summary.get(newquery, new KinveyListCallback<GenericJson>() {
+
+                    @Override
+                    public void onSuccess(GenericJson[] genericJsons) {
+                        Log.e("success",genericJsons[0].toString());
+                        createEditSummarySharedPreference(CCU_Details.getSingletonContext(), genericJsons[0].toString());
+                        h.postDelayed(mThraed, 60000);
+                    }
+
+                    @Override
+                    public void onFailure(Throwable throwable) {
+                        Log.e("result", "failed");
+                    }
+                });
+            }
+
+        }
+    });
 
 
+    public static Thread mThraedtimeseries = new Thread(new Runnable() {
+        @Override
+        public void run() {
+            Query newquery = new Query();
+            String collectionName = ccuid + "SystemTS1";
+            newquery.addSort("date_time", AbstractQuery.SortOrder.DESC);
+            newquery.setLimit(1);
+            AsyncAppData<Data_Log> summary = Generic_Methods.getKinveyClient().appData(collectionName, Data_Log.class);
+            if (summary.isOnline()) {
+
+                summary.get(newquery, new KinveyListCallback<Data_Log>() {
+
+                    @Override
+                    public void onSuccess(Data_Log[] data_logs) {
+
+                        if(data_logs.length !=0) {
+                            createEditDataLogSharedPreference(CCU_Details.getSingletonContext(), data_logs[0].toString());
+                            Log.e("success111",data_logs[0].toString());
+                        }else {
+                            createEditDataLogSharedPreference(CCU_Details.getSingletonContext(), "");
+                        }
+                        h1.postDelayed(mThraedtimeseries, 60000);
+                    }
+
+                    @Override
+                    public void onFailure(Throwable throwable) {
+                        Log.e("result", "failed");
+                    }
+                });
+            }
+
+        }
+    });
+
+
+    Generic_Methods() {
+
+    }
+
+    public Generic_Methods getInstance() {
+        if (mInstance == null)
+            mInstance = new Generic_Methods();
+        return mInstance;
+    }
+
+    public static void initKinvey(Context c) {
+        mKinveyClient = new Client.Builder(c).build();
+        mKinveyClient.enableDebugLogging();
+    }
+
+    public static Client getKinveyClient() {
+
+        return mKinveyClient;
+    }
+
+    public static void createEditSummarySharedPreference(Context c, String summary) {
+        SharedPreferences.Editor editor = c.getSharedPreferences("summarydata", Context.MODE_PRIVATE).edit();
+        editor.putString("summary", summary);
+        editor.apply();
+    }
+
+    public static void createEditDataLogSharedPreference(Context c, String summary) {
+        SharedPreferences.Editor editor = c.getSharedPreferences("datalog", Context.MODE_PRIVATE).edit();
+        editor.putString("data", summary);
+        editor.apply();
+    }
 
 
     public static void createEditLoginSharedPreference(Context c, boolean isLoggedIn, String email, String password, Boolean Otp_Verified) {
@@ -109,8 +220,6 @@ public class Generic_Methods {
     }
 
 
-
-
     public static String createPubnubSystemTestMsg(int a1, int a2, int a3, int a4, int r1, int r2, int r3, int r4, int r5, int r6, int r7) {
         String x;
         JSONObject LogObj = new JSONObject();
@@ -159,5 +268,80 @@ public class Generic_Methods {
         }
         x = LogObj.toString();
         return x;
+    }
+
+
+    public static void unbindDrawables(View view) {
+        try {
+            System.gc();
+            Runtime.getRuntime().gc();
+            if (view.getBackground() != null) {
+                view.getBackground().setCallback(null);
+            }
+            if (view instanceof ViewGroup) {
+                for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
+                    unbindDrawables(((ViewGroup) view).getChildAt(i));
+                    View view1 = ((ViewGroup) view).getChildAt(i);
+                    if (view1 instanceof EditText || view1 instanceof SearchView) {
+                        ((EditText) view).setText("");
+                    }
+                }
+                ((ViewGroup) view).removeAllViews();
+            }
+        } catch (Exception e) {
+            Log.d("drawableerror", e.getStackTrace().toString());
+        }
+    }
+
+    public static String FetchSummaryData(final String ccuid1) {
+
+        ccuid = ccuid1;
+        try {
+            if (mThraed.isAlive()) {
+                h.postDelayed(mThraed, 30000);
+            } else {
+                mThraed.start();
+            }
+        } catch (Exception e) {
+            h.postDelayed(mThraed, 30000);
+        }
+
+        return null;
+    }
+
+    public static void PauseCalled() {
+        try {
+            mThraed.interrupt();
+            h.removeCallbacks(mThraed);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public static void PauseCalled1() {
+        try {
+            mThraedtimeseries.interrupt();
+            h1.removeCallbacks(mThraedtimeseries);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public static String FetchDatalogData(final String ccuid1) {
+
+        ccuid = ccuid1;
+        try {
+            if (mThraedtimeseries.isAlive()) {
+                h1.postDelayed(mThraedtimeseries, 30000);
+            } else {
+                mThraedtimeseries.start();
+            }
+        } catch (Exception e) {
+            h1.postDelayed(mThraedtimeseries, 30000);
+        }
+
+        return null;
     }
 }

@@ -62,7 +62,7 @@ public class Zones_Adapter extends BaseAdapter {
                 view_holder.wrm_address.setText("" + zone_datas.get(position).getFsv_address());
                 view_holder.damper_size.setText("" + zone_datas.get(position).getDamper_size());
                 view_holder.installed_damper.setText("" + zone_datas.get(position).getDamper_type());
-                view_holder.occupancy_sensor.setText("" + zone_datas.get(position).getOccu_sensor());
+                view_holder.occupancy_sensor.setText("" + zone_datas.get(position).getOccu_sensor()+"            ");
                 view_holder.desired_temp.setText("" + zone_datas.get(position).getSet_temp());
                 view_holder.current_temp.setText("" + zone_datas.get(position).getCur_temp());
                 view_holder.damper_pos.setText("" + zone_datas.get(position).getDamper_pos());
@@ -73,13 +73,13 @@ public class Zones_Adapter extends BaseAdapter {
                 }
                 view_holder.air_flow_temp.setText("" + zone_datas.get(position).getAirflow_temp());
                 if (!zone_datas.get(position).getMonday_occutime().equals("")) {
-                    view_holder.zone_schedule_Mon.setText("Mon  " + zone_datas.get(position).getMonday_occutime() + "/" + zone_datas.get(position).getMonday_occutemp() + "/" + zone_datas.get(position).getMonday_unoccutime());
-                    view_holder.zone_schedule_Tue.setText("Tue  " + zone_datas.get(position).getTuesday_occutime() + "/" + zone_datas.get(position).getTuesday_occutemp() + "/" + zone_datas.get(position).getTuesday_unoccutime());
-                    view_holder.zone_schedule_Wed.setText("Wed  " + zone_datas.get(position).getWednesday_occutime() + "/" + zone_datas.get(position).getWednesday_occutemp() + "/" + zone_datas.get(position).getWednesday_unoccutime());
-                    view_holder.zone_schedule_Thu.setText("Thu  " + zone_datas.get(position).getThursday_occutime() + "/" + zone_datas.get(position).getThursday_occutemp() + "/" + zone_datas.get(position).getThursday_unoccutime());
-                    view_holder.zone_schedule_Fri.setText("Fri  " + zone_datas.get(position).getFriday_occutime() + "/" + zone_datas.get(position).getFriday_occutemp() + "/" + zone_datas.get(position).getFriday_unoccutime());
-                    view_holder.zone_schedule_Sat.setText("Sat  " + zone_datas.get(position).getSaturday_occutime() + "/" + zone_datas.get(position).getSaturday_occutemp() + "/" + zone_datas.get(position).getSaturday_unoccutime());
-                    view_holder.zone_schedule_Sun.setText("Sun  " + zone_datas.get(position).getSunday_occutime() + "/" + zone_datas.get(position).getSunday_occutemp() + "/" + zone_datas.get(position).getSunday_unoccutime());
+                    view_holder.zone_schedule_Mon.setText("Mon      " + zone_datas.get(position).getMonday_occutime() + "/" + zone_datas.get(position).getMonday_occutemp() + "/" + zone_datas.get(position).getMonday_unoccutime());
+                    view_holder.zone_schedule_Tue.setText("Tue       " + zone_datas.get(position).getTuesday_occutime() + "/" + zone_datas.get(position).getTuesday_occutemp() + "/" + zone_datas.get(position).getTuesday_unoccutime());
+                    view_holder.zone_schedule_Wed.setText("Wed      " + zone_datas.get(position).getWednesday_occutime() + "/" + zone_datas.get(position).getWednesday_occutemp() + "/" + zone_datas.get(position).getWednesday_unoccutime());
+                    view_holder.zone_schedule_Thu.setText("Thu       " + zone_datas.get(position).getThursday_occutime() + "/" + zone_datas.get(position).getThursday_occutemp() + "/" + zone_datas.get(position).getThursday_unoccutime());
+                    view_holder.zone_schedule_Fri.setText("Fri         " + zone_datas.get(position).getFriday_occutime() + "/" + zone_datas.get(position).getFriday_occutemp() + "/" + zone_datas.get(position).getFriday_unoccutime());
+                    view_holder.zone_schedule_Sat.setText("Sat        " + zone_datas.get(position).getSaturday_occutime() + "/" + zone_datas.get(position).getSaturday_occutemp() + "/" + zone_datas.get(position).getSaturday_unoccutime());
+                    view_holder.zone_schedule_Sun.setText("Sun       " + zone_datas.get(position).getSunday_occutime() + "/" + zone_datas.get(position).getSunday_occutemp() + "/" + zone_datas.get(position).getSunday_unoccutime());
                 } else {
                     view_holder.zone_schedule.setVisibility(View.GONE);
                     view_holder.zone_schedule_Mon.setVisibility(View.GONE);

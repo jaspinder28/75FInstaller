@@ -45,13 +45,14 @@ public class DamperTestFragment extends Fragment implements SeekBar.OnSeekBarCha
     ListView zone_list;
     private static ProgressDialog Pleasewait;
     String ccuname;
+    View v;
     ArrayList<Damper_test_row_data> zoneDatas;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         ccuname = getArguments().getString("ccuname");
-        View v = inflater.inflate(R.layout.damper_test_fragment, container, false);
+        v = inflater.inflate(R.layout.damper_test_fragment, container, false);
         ButterKnife.inject(this, v);
         seekbar_common.setOnSeekBarChangeListener(this);
         return v;
@@ -61,6 +62,9 @@ public class DamperTestFragment extends Fragment implements SeekBar.OnSeekBarCha
     public void setMenuVisibility(boolean menuVisible) {
         super.setMenuVisibility(menuVisible);
         if (isVisible() && CCU_Details.viewPager.getCurrentItem() == 3) {
+            Generic_Methods.PauseCalled();
+            Generic_Methods.PauseCalled1();
+            Log.d("dampertest", "yes");
             QuerySummaryData();
         }
     }
@@ -70,11 +74,11 @@ public class DamperTestFragment extends Fragment implements SeekBar.OnSeekBarCha
             Query newquery = new Query();
             newquery.equals("ccu_name", ccuname);
             if (Generic_Methods.isNetworkAvailable(CCU_Details.getSingletonContext())) {
-            if (Pleasewait == null) {
-                Pleasewait = ProgressDialog.show(CCU_Details.getSingletonContext(), "", "Please Wait...");
-            }
+                if (Pleasewait == null) {
+                    Pleasewait = ProgressDialog.show(CCU_Details.getSingletonContext(), "", "Please Wait...");
+                }
 
-                AsyncAppData<GenericJson> summary = CCU_Details.mKinveyClient.appData("00CCUSummary", GenericJson.class);
+                AsyncAppData<GenericJson> summary = Generic_Methods.getKinveyClient().appData("00CCUSummary", GenericJson.class);
                 summary.get(newquery, new KinveyListCallback<GenericJson>() {
                     @Override
                     public void onSuccess(GenericJson[] genericJsons) {
@@ -156,10 +160,23 @@ public class DamperTestFragment extends Fragment implements SeekBar.OnSeekBarCha
                     Generic_Methods.PublishToChannel(channel, msg);
 
                 }
-            }else {
-                Generic_Methods.getToast(CCU_Details.getSingletonContext(),getResources().getString(R.string.user_offline));
+            } else {
+                Generic_Methods.getToast(CCU_Details.getSingletonContext(), getResources().getString(R.string.user_offline));
             }
         }
+
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Thread h = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Generic_Methods.unbindDrawables(v.findViewById(R.id.main_layout));
+            }
+        });
+        h.start();
 
     }
 }
