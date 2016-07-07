@@ -195,6 +195,7 @@ public class Summary_Fragment extends Fragment {
                     cooling_stage2 = "On";
                 } else if (sd.getCooling_stage_2() == -1) {
                     cooling_stage2 = "not availible";
+                    Generic_Methods.getToast(CCU_Details.getSingletonContext(),"gehvga ");
                 }
 
                 if (sd.getHeating_stage_1() == 0) {
