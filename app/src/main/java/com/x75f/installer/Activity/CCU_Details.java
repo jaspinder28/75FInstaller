@@ -2,6 +2,7 @@ package com.x75f.installer.Activity;
 
 
 import android.annotation.TargetApi;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -10,6 +11,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -32,7 +34,7 @@ import com.kinvey.android.callback.KinveyListCallback;
 import com.kinvey.android.callback.KinveyUserCallback;
 import com.kinvey.java.Logger;
 import com.kinvey.java.Query;
-import com.kinvey.java.User;
+
 import com.x75f.installer.DB_Local.SQLliteAdapter;
 import com.x75f.installer.Fragments.DamperTestFragment;
 import com.x75f.installer.Fragments.DataLogFragment;
@@ -49,21 +51,31 @@ import butterknife.InjectView;
 
 
 public class CCU_Details extends AppCompatActivity implements View.OnClickListener {
-
-    public static ViewPager viewPager;
+    private static ProgressDialog Pleasewait = null;
+    public ViewPager viewPager;
     String ccuname;
     String ccuid;
-    public static Button bSummary;
-    public static Toolbar tool_bar;
-    public static Button bDatalog;
-    public static Button bSystem;
-    public static Button bDamper;
-    public static Button bNotes;
-    public static int currentPage;
-    private static Context _singleton;
+    public  Button bSummary;
+    public  Toolbar tool_bar;
+    public  Button bDatalog;
+    public  Button bSystem;
+    public  Button bDamper;
+    public  Button bNotes;
+    public  int currentPage;
     public SQLliteAdapter sqLliteAdapter;
+    public Handler summaryHandler;
+    public Runnable summaryUpdate;
+    public Handler datalogHandler;
+    public Runnable datalogUpdate;
+    public Handler systemTestHandler;
+    public Runnable systemTestUpdate;
+    public Handler damperTestHandler;
+    public Runnable damperTestUpdate;
+//    public RTApi notesApi;
+//    public RTManager NotesManager;
+    public static CCU_Details _singleton;
 
-    public static Context getSingletonContext() {
+    public static CCU_Details getSingletonContext() {
         return _singleton;
     }
 
@@ -71,6 +83,12 @@ public class CCU_Details extends AppCompatActivity implements View.OnClickListen
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.details_pages);
+
+        //notes rich text editor
+//        notesApi = new RTApi(CCU_Details.this, new RTProxyImpl(CCU_Details.this), new RTMediaFactoryImpl(CCU_Details.this, true));
+//        NotesManager = new RTManager(notesApi, savedInstanceState);
+
+        _singleton = this;
         viewPager = (ViewPager) findViewById(R.id.ViewPager);
         bSummary = (Button) findViewById(R.id.bSummary);
         bDatalog = (Button) findViewById(R.id.bDatalog);
@@ -78,7 +96,6 @@ public class CCU_Details extends AppCompatActivity implements View.OnClickListen
         bDamper = (Button) findViewById(R.id.bDamper);
         bNotes = (Button) findViewById(R.id.bNotes);
         tool_bar = (Toolbar) findViewById(R.id.tool_bar);
-
         setSupportActionBar(tool_bar);
         getSupportActionBar().setTitle("Select CCU");
         tool_bar.setNavigationIcon(getResources().getDrawable(R.mipmap.back));
@@ -107,9 +124,21 @@ public class CCU_Details extends AppCompatActivity implements View.OnClickListen
 
     }
 
+//    @Override
+//    protected void onSaveInstanceState(Bundle outState) {
+//        super.onSaveInstanceState(outState);
+////        if(NotesManager != null)
+////            NotesManager.onSaveInstanceState(outState);
+//    }
+
+
     @Override
     protected void onResume() {
         super.onResume();
+        OnResumeFn();
+    }
+
+    public void OnResumeFn() {
         _singleton = this;
         sqLliteAdapter = new SQLliteAdapter(CCU_Details.this);
         viewPager.setOffscreenPageLimit(5);
@@ -119,17 +148,26 @@ public class CCU_Details extends AppCompatActivity implements View.OnClickListen
         bSystem.setOnClickListener(this);
         bDamper.setOnClickListener(this);
         bNotes.setOnClickListener(this);
+        summaryHandler = new Handler();
+        datalogHandler = new Handler();
+        systemTestHandler = new Handler();
+        damperTestHandler = new Handler();
         ccuname = getIntent().getStringExtra("CcuData");
         ccuid = getIntent().getStringExtra("ccu_id");
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                currentPage = position;
+//                currentPage = position;
             }
 
             @Override
             public void onPageSelected(int position) {
+
+                Fragment previousFragment = getCurrentFragment(currentPage);
+                previousFragment.onPause();
                 currentPage = position;
+                Fragment newFragment = getCurrentFragment(position);
+                newFragment.onResume();
             }
 
             @Override
@@ -137,6 +175,17 @@ public class CCU_Details extends AppCompatActivity implements View.OnClickListen
 
             }
         });
+
+    }
+
+    private Fragment getCurrentFragment(int cf) {
+
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        Fragment topFrag = null;
+        if (fragmentManager.getFragments() != null) {
+            topFrag = getSupportFragmentManager().findFragmentByTag("android:switcher:" + R.id.ViewPager + ":" + cf);
+            return topFrag;
+        } else return null;
     }
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
@@ -171,9 +220,12 @@ public class CCU_Details extends AppCompatActivity implements View.OnClickListen
                 viewPager.setCurrentItem(1, false);
                 break;
             case (R.id.bSystem):
+                Log.e("clicked", "system");
+
                 checkForOtpRow(2);
                 break;
             case (R.id.bDamper):
+                Log.e("clicked", "system");
                 checkForOtpRow(3);
                 break;
             case (R.id.bNotes):
@@ -280,17 +332,24 @@ public class CCU_Details extends AppCompatActivity implements View.OnClickListen
 
     public void checkForOtpRow(final int x) {
 
-
+//        if (Pleasewait == null) {
+//            Pleasewait = ProgressDialog.show(CCU_Details.getSingletonContext(), "", "Please Wait...");
+//        }
         Query newquery = new Query();
         newquery.equals("_id", ccuid);
         if (Generic_Methods.isNetworkAvailable(CCU_Details.getSingletonContext())) {
+            Log.e("clicked", "test");
             AsyncAppData<GenericJson> summary = Generic_Methods.getKinveyClient().appData("00CCUOneTimePassword", GenericJson.class);
+
             summary.get(newquery, new KinveyListCallback<GenericJson>() {
                 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
                 @Override
                 public void onSuccess(GenericJson[] genericJsons) {
+//                    dismissDialog();
                     try {
                         if (genericJsons.length == 0) {
+
+                            Log.e("clicked", "done");
                             Otp_Verification otp_verification = new Otp_Verification(CCU_Details.getSingletonContext(), ccuid, x);
                             otp_verification.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                             otp_verification.show();
@@ -299,6 +358,7 @@ public class CCU_Details extends AppCompatActivity implements View.OnClickListen
 
                             try {
                                 JSONObject s = new JSONObject(genericJsons[0].toString());
+//                                Generic_Methods.getToast(CCU_Details.getSingletonContext(), s.getString("oneTimePassword") + sqLliteAdapter.getdata(ccuid));
                                 if (s.getString("oneTimePassword") != null && sqLliteAdapter.getdata(ccuid) == 1) {
                                     viewPager.setCurrentItem(x, false);
                                     if (x == 2) {
@@ -337,6 +397,7 @@ public class CCU_Details extends AppCompatActivity implements View.OnClickListen
                         }
 
                     } catch (Exception e) {
+                        Generic_Methods.getToast(CCU_Details.getSingletonContext(), e.getMessage());
                         Otp_Verification otp_verification = new Otp_Verification(CCU_Details.getSingletonContext(), ccuid, x);
                         otp_verification.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                         otp_verification.show();
@@ -347,7 +408,7 @@ public class CCU_Details extends AppCompatActivity implements View.OnClickListen
 
                 @Override
                 public void onFailure(Throwable throwable) {
-
+                    dismissDialog();
                     Otp_Verification otp_verification = new Otp_Verification(CCU_Details.getSingletonContext(), ccuid, x);
                     otp_verification.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                     otp_verification.show();
@@ -367,8 +428,8 @@ public class CCU_Details extends AppCompatActivity implements View.OnClickListen
         super.onPause();
         Generic_Methods.createEditSummarySharedPreference(CCU_Details.getSingletonContext(), "");
         Generic_Methods.createEditDataLogSharedPreference(CCU_Details.getSingletonContext(), "");
-        Generic_Methods.PauseCalled();
-        Generic_Methods.PauseCalled1();
+        Generic_Methods.PauseCalledDatalog();
+        Generic_Methods.PauseCalledSummary();
 
 
     }
@@ -376,8 +437,9 @@ public class CCU_Details extends AppCompatActivity implements View.OnClickListen
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Generic_Methods.h.removeCallbacks(Generic_Methods.mThraed);
-
+//        if(NotesManager != null) {
+//            NotesManager.onDestroy(isFinishing());
+//        }
         Thread h = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -386,6 +448,14 @@ public class CCU_Details extends AppCompatActivity implements View.OnClickListen
         });
         h.start();
 
+    }
+    public void dismissDialog() {
+        if (Pleasewait != null) {
+            if (Pleasewait.isShowing()) {
+                Pleasewait.dismiss();
+                Pleasewait = null;
+            }
+        }
     }
 }
 

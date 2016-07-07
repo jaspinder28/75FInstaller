@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
@@ -20,6 +21,7 @@ import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import com.google.api.client.json.GenericJson;
 import com.kinvey.android.AsyncAppData;
@@ -41,21 +43,21 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 
 
-public class SystemTestFragment extends Fragment implements View.OnClickListener, AdapterView.OnItemSelectedListener {
+public class SystemTestFragment extends Fragment implements View.OnClickListener {
     @InjectView(R.id.coolingStage1)
-    Button coolingStage1;
+    ToggleButton coolingStage1;
     @InjectView(R.id.coolingStage2)
-    Button coolingStage2;
+    ToggleButton coolingStage2;
     @InjectView(R.id.fanStage1)
-    Button fanStage1;
+    ToggleButton fanStage1;
     @InjectView(R.id.fanStage2)
-    Button fanStage2;
+    ToggleButton fanStage2;
     @InjectView(R.id.heatingStage1)
-    Button heatingStage1;
+    ToggleButton heatingStage1;
     @InjectView(R.id.heatingStage2)
-    Button heatingStage2;
+    ToggleButton heatingStage2;
     @InjectView(R.id.humidifier)
-    Button humidifier;
+    ToggleButton humidifier;
     @InjectView(R.id.row11)
     RelativeLayout row11;
     @InjectView(R.id.row10)
@@ -100,7 +102,7 @@ public class SystemTestFragment extends Fragment implements View.OnClickListener
     int analog3position = 0;
     int analog4position = 0;
     View v;
-    Integer[] damperValues = new Integer[]{0,1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+    Integer[] damperValues = new Integer[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
             21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 5, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70
             , 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100};
 
@@ -113,12 +115,31 @@ public class SystemTestFragment extends Fragment implements View.OnClickListener
         return v;
     }
 
+//    @Override
+//    public void setMenuVisibility(boolean menuVisible) {
+//        super.setMenuVisibility(menuVisible);
+//
+//
+//    }
+
+
     @Override
-    public void setMenuVisibility(boolean menuVisible) {
-        super.setMenuVisibility(menuVisible);
-        if (SystemTestFragment.this != null && isVisible() && CCU_Details.viewPager.getCurrentItem() == 2) {
-            Generic_Methods.PauseCalled();
-            Generic_Methods.PauseCalled1();
+    public void onPause() {
+        super.onPause();
+        dismissDialog();
+        if (CCU_Details.getSingletonContext().systemTestHandler != null && CCU_Details.getSingletonContext().systemTestUpdate != null) {
+            CCU_Details.getSingletonContext().systemTestHandler.removeCallbacks(CCU_Details.getSingletonContext().systemTestUpdate);
+            CCU_Details.getSingletonContext().systemTestHandler = null;
+            CCU_Details.getSingletonContext().systemTestUpdate = null;
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (SystemTestFragment.this != null && isVisible() && CCU_Details.getSingletonContext().viewPager.getCurrentItem() == 2) {
+
+            CCU_Details.getSingletonContext().systemTestHandler = new Handler();
             Log.d("systemtest", "yes");
             Query newquery = new Query();
             ccuname = getArguments().getString("ccuname");
@@ -132,25 +153,17 @@ public class SystemTestFragment extends Fragment implements View.OnClickListener
                 summary.get(newquery, new KinveyListCallback<GenericJson>() {
                     @Override
                     public void onSuccess(GenericJson[] genericJsons) {
-                        try {
-                            if (Pleasewait != null && Pleasewait.isShowing()) {
-                                Pleasewait.dismiss();
-                                Pleasewait = null;
-                            }
+
+                            dismissDialog();
                             String Summarydata = genericJsons[0].toString();
                             setTheValues(Summarydata);
 
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
+
                     }
 
                     @Override
                     public void onFailure(Throwable throwable) {
-                        if (Pleasewait != null && Pleasewait.isShowing()) {
-                            Pleasewait.dismiss();
-                            Pleasewait = null;
-                        }
+                        dismissDialog();
                         Toast.makeText(getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -159,7 +172,6 @@ public class SystemTestFragment extends Fragment implements View.OnClickListener
             }
 
         }
-
     }
 
     @Override
@@ -167,86 +179,87 @@ public class SystemTestFragment extends Fragment implements View.OnClickListener
 
         switch (v.getId()) {
             case (R.id.coolingStage1):
-                if (coolingStage1.getText().toString().equalsIgnoreCase("OFF")) {
-                    coolingStage1.setText("ON");
+//                if (coolingStage1.getText().toString().equalsIgnoreCase("OFF")) {
+                if (!coolingStage1.isChecked()) {
+//                    coolingStage1.setText("ON");
                     cooling_stage1val = 1;
-                    coolingStage1.setTextColor(getResources().getColor(R.color.primary));
+//                    coolingStage1.setTextColor(getResources().getColor(R.color.primary));
                 } else {
                     cooling_stage1val = 0;
-                    coolingStage1.setText("OFF");
-                    coolingStage1.setTextColor(getResources().getColor(R.color.black));
+//                    coolingStage1.setText("OFF");
+//                    coolingStage1.setTextColor(getResources().getColor(R.color.black));
                 }
                 PubnubCall();
                 break;
             case (R.id.coolingStage2):
-                if (coolingStage2.getText().toString().equalsIgnoreCase("OFF")) {
+                if (!coolingStage2.isChecked()) {
                     cooling_stage2val = 1;
-                    coolingStage2.setText("ON");
-                    coolingStage2.setTextColor(getResources().getColor(R.color.primary));
+//                    coolingStage2.setText("ON");
+//                    coolingStage2.setTextColor(getResources().getColor(R.color.primary));
                 } else {
                     cooling_stage2val = 0;
-                    coolingStage2.setText("OFF");
-                    coolingStage2.setTextColor(getResources().getColor(R.color.black));
+//                    coolingStage2.setText("OFF");
+//                    coolingStage2.setTextColor(getResources().getColor(R.color.black));
                 }
                 PubnubCall();
                 break;
             case (R.id.fanStage1):
-                if (fanStage1.getText().toString().equalsIgnoreCase("OFF")) {
+                if (!fanStage1.isChecked()) {
                     fan_stage1val = 1;
-                    fanStage1.setText("ON");
-                    fanStage1.setTextColor(getResources().getColor(R.color.primary));
+//                    fanStage1.setText("ON");
+//                    fanStage1.setTextColor(getResources().getColor(R.color.primary));
                 } else {
                     fan_stage1val = 0;
-                    fanStage1.setText("OFF");
-                    fanStage1.setTextColor(getResources().getColor(R.color.black));
+//                    fanStage1.setText("OFF");
+//                    fanStage1.setTextColor(getResources().getColor(R.color.black));
                 }
                 PubnubCall();
                 break;
             case (R.id.fanStage2):
-                if (fanStage2.getText().toString().equalsIgnoreCase("OFF")) {
+                if (!fanStage2.isChecked()) {
                     fan_stage2val = 1;
-                    fanStage2.setText("ON");
-                    fanStage2.setTextColor(getResources().getColor(R.color.primary));
+//                    fanStage2.setText("ON");
+//                    fanStage2.setTextColor(getResources().getColor(R.color.primary));
                 } else {
                     fan_stage2val = 0;
-                    fanStage2.setText("OFF");
-                    fanStage2.setTextColor(getResources().getColor(R.color.black));
+//                    fanStage2.setText("OFF");
+//                    fanStage2.setTextColor(getResources().getColor(R.color.black));
                 }
                 PubnubCall();
                 break;
             case (R.id.heatingStage1):
-                if (heatingStage1.getText().toString().equalsIgnoreCase("OFF")) {
+                if (!heatingStage1.isChecked()) {
                     heating_stage1val = 1;
-                    heatingStage1.setText("ON");
-                    heatingStage1.setTextColor(getResources().getColor(R.color.primary));
+//                    heatingStage1.setText("ON");
+//                    heatingStage1.setTextColor(getResources().getColor(R.color.primary));
                 } else {
                     heating_stage1val = 0;
-                    heatingStage1.setText("OFF");
-                    heatingStage1.setTextColor(getResources().getColor(R.color.black));
+//                    heatingStage1.setText("OFF");
+//                    heatingStage1.setTextColor(getResources().getColor(R.color.black));
                 }
                 PubnubCall();
                 break;
             case (R.id.heatingStage2):
-                if (heatingStage2.getText().toString().equalsIgnoreCase("OFF")) {
-                    heatingStage2.setText("ON");
+                if (!heatingStage2.isChecked()) {
+//                    heatingStage2.setText("ON");
                     heating_stage2val = 1;
-                    heatingStage2.setTextColor(getResources().getColor(R.color.primary));
+//                    heatingStage2.setTextColor(getResources().getColor(R.color.primary));
                 } else {
                     heating_stage2val = 0;
-                    heatingStage2.setText("OFF");
-                    heatingStage2.setTextColor(getResources().getColor(R.color.black));
+//                    heatingStage2.setText("OFF");
+//                    heatingStage2.setTextColor(getResources().getColor(R.color.black));
                 }
                 PubnubCall();
                 break;
             case (R.id.humidifier):
-                if (humidifier.getText().toString().equalsIgnoreCase("OFF")) {
-                    humidifier.setText("ON");
+                if (!humidifier.isChecked()) {
+//                    humidifier.setText("ON");
                     humidifierval = 1;
-                    humidifier.setTextColor(getResources().getColor(R.color.primary));
+//                    humidifier.setTextColor(getResources().getColor(R.color.primary));
                 } else {
-                    humidifier.setText("OFF");
+//                    humidifier.setText("OFF");
                     humidifierval = 0;
-                    humidifier.setTextColor(getResources().getColor(R.color.black));
+//                    humidifier.setTextColor(getResources().getColor(R.color.black));
                 }
                 PubnubCall();
                 break;
@@ -267,7 +280,8 @@ public class SystemTestFragment extends Fragment implements View.OnClickListener
                         s.getInt("mOutsideAirMinTemp"), s.getInt("mOutsideAirHumidity"), s.getInt("mOutsideAirMaxHumidity"), s.getInt("mOutsideAirMinHumidity"),
                         s.optInt("mCO2Level", 0), s.optInt("mCO2LevelThreshold", 2000), s.getInt("mMixedAirTemperature"), s.getInt("mReturnAirTemperature"), s.getInt("mDamperPos"), s.getString("zone_summary"),
                         s.optInt("mNO2Level", 0), s.optInt("mNO2LevelThreshold", 10), s.optInt("mCOLevel", 0), s.optInt("mCOLevelThreshold", 250), s.optBoolean("isPressureSensorPaired", false),
-                        s.optDouble("mPressureLevel", 0), s.optDouble("mPressureLevelThreshold", 0), s.optBoolean("isCOPaired", false), s.optBoolean("isNO2Paired", false));
+                        s.optDouble("mPressureLevel", 0), s.optDouble("mPressureLevelThreshold", 0), s.optBoolean("isCOPaired", false), s.optBoolean("isNO2Paired", false)
+                        , s.optInt("analog1_type", -1), s.optInt("analog2_type", -1), s.optInt("analog3_type", -1), s.optInt("analog4_type", -1));
 
             } else {
                 sd = new Summary_Data(s.getString("ccu_name"), s.getString("date_time"), s.getInt("building_no_cooler"), s.getInt("building_no_hotter"), s.getInt("user_no_cooler"), s.getInt("user_no_hotter"),
@@ -277,9 +291,10 @@ public class SystemTestFragment extends Fragment implements View.OnClickListener
                         s.getInt("analog4_damperPos"), s.getDouble("mInsideAirEnthalpy"), s.getDouble("mOutsideAirEnthalpy"), s.getInt("mOutsideAirTemperature"), s.getInt("mOutsideAirMaxTemp"),
                         s.getInt("mOutsideAirMinTemp"), s.getInt("mOutsideAirHumidity"), s.getInt("mOutsideAirMaxHumidity"), s.getInt("mOutsideAirMinHumidity"),
                         s.getInt("mMixedAirTemperature"), s.getInt("mReturnAirTemperature"), s.getInt("mDamperPos"), s.getString("zone_summary"),
-                        s.optBoolean("isPressureSensorPaired", false), s.optDouble("mPressureLevel", 0), s.optDouble("mPressureLevelThreshold", 0));
+                        s.optBoolean("isPressureSensorPaired", false), s.optDouble("mPressureLevel", 0), s.optDouble("mPressureLevelThreshold", 0)
+                        , s.optInt("analog1_type", -1), s.optInt("analog2_type", -1), s.optInt("analog3_type", -1), s.optInt("analog4_type", -1));
             }
-            if (isVisible() && CCU_Details.viewPager.getCurrentItem() == 2) {
+            if (isVisible() && CCU_Details.getSingletonContext().viewPager.getCurrentItem() == 2) {
 //                analog1.setMinValue(0);
 //                analog1.setMaxValue(100);
                 ArrayAdapter<Integer> adapter = new ArrayAdapter<Integer>(getActivity(), android.R.layout.simple_spinner_item, damperValues);
@@ -287,33 +302,81 @@ public class SystemTestFragment extends Fragment implements View.OnClickListener
                 analog2.setAdapter(adapter);
                 analog3.setAdapter(adapter);
                 analog4.setAdapter(adapter);
-//                analog2.setMinValue(0);
-//                analog2.setMaxValue(100);
-//                analog3.setMinValue(0);
-//                analog3.setMaxValue(100);
-//                analog4.setMinValue(0);
-//                analog4.setMaxValue(100);
+
+                analog1.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                        analog1position = (int) parent.getItemAtPosition(position);
+                        PubnubCall();
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parent) {
+
+                    }
+                });
+                analog2.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                        analog2position = (int) parent.getItemAtPosition(position);
+                        PubnubCall();
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parent) {
+
+                    }
+                });
+                analog3.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                        analog3position = (int) parent.getItemAtPosition(position);
+                        PubnubCall();
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parent) {
+
+                    }
+                });
+                analog4.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                        analog4position = (int) parent.getItemAtPosition(position);
+                        PubnubCall();
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parent) {
+
+                    }
+                });
+
                 if (sd.getCooling_stage_1() == 0) {
                     cooling_stage1val = 0;
-                    coolingStage1.setText("OFF");
-                    coolingStage1.setTextColor(getResources().getColor(R.color.black));
+                    coolingStage1.setChecked(false);
+//                    coolingStage1.setText("OFF");
+//                    coolingStage1.setTextColor(getResources().getColor(R.color.black));
                 } else if (sd.getCooling_stage_1() == 1) {
                     cooling_stage1val = 1;
-                    coolingStage1.setText("ON");
-                    coolingStage1.setTextColor(getResources().getColor(R.color.primary));
+                    coolingStage1.setChecked(true);
+//                    coolingStage1.setText("ON");
+//                    coolingStage1.setTextColor(getResources().getColor(R.color.primary));
                 } else if (sd.getCooling_stage_1() == -1) {
                     cooling_stage1val = -1;
                     row1.setVisibility(View.GONE);
                 }
 
                 if (sd.getCooling_stage_2() == 0) {
-                    coolingStage2.setText("OFF");
+//                    coolingStage2.setText("OFF");
                     cooling_stage2val = 0;
-                    coolingStage2.setTextColor(getResources().getColor(R.color.black));
+                    coolingStage2.setChecked(false);
+//                    coolingStage2.setTextColor(getResources().getColor(R.color.black));
                 } else if (sd.getCooling_stage_2() == 1) {
                     cooling_stage2val = 1;
-                    coolingStage2.setText("ON");
-                    coolingStage2.setTextColor(getResources().getColor(R.color.primary));
+                    coolingStage2.setChecked(true);
+//                    coolingStage2.setText("ON");
+//                    coolingStage2.setTextColor(getResources().getColor(R.color.primary));
                 } else if (sd.getCooling_stage_2() == -1) {
                     cooling_stage2val = -1;
                     row2.setVisibility(View.GONE);
@@ -321,12 +384,14 @@ public class SystemTestFragment extends Fragment implements View.OnClickListener
 
                 if (sd.getFan_stage_1() == 0) {
                     fan_stage1val = 0;
-                    fanStage1.setText("OFF");
-                    fanStage1.setTextColor(getResources().getColor(R.color.black));
+                    fanStage1.setChecked(false);
+//                    fanStage1.setText("OFF");
+//                    fanStage1.setTextColor(getResources().getColor(R.color.black));
                 } else if (sd.getFan_stage_1() == 1) {
                     fan_stage1val = 1;
-                    fanStage1.setText("ON");
-                    fanStage1.setTextColor(getResources().getColor(R.color.primary));
+                    fanStage1.setChecked(true);
+//                    fanStage1.setText("ON");
+//                    fanStage1.setTextColor(getResources().getColor(R.color.primary));
                 } else if (sd.getFan_stage_1() == -1) {
                     fan_stage1val = -1;
                     row3.setVisibility(View.GONE);
@@ -334,12 +399,14 @@ public class SystemTestFragment extends Fragment implements View.OnClickListener
 
                 if (sd.getFan_stage_2() == 0) {
                     fan_stage2val = 0;
-                    fanStage2.setText("OFF");
-                    fanStage2.setTextColor(getResources().getColor(R.color.black));
+                    fanStage2.setChecked(false);
+//                    fanStage2.setText("OFF");
+//                    fanStage2.setTextColor(getResources().getColor(R.color.black));
                 } else if (sd.getFan_stage_2() == 1) {
                     fan_stage2val = 1;
-                    fanStage2.setText("ON");
-                    fanStage2.setTextColor(getResources().getColor(R.color.primary));
+                    fanStage2.setChecked(true);
+//                    fanStage2.setText("ON");
+//                    fanStage2.setTextColor(getResources().getColor(R.color.primary));
                 } else if (sd.getFan_stage_2() == -1) {
                     row4.setVisibility(View.GONE);
                     fan_stage2val = -1;
@@ -347,24 +414,28 @@ public class SystemTestFragment extends Fragment implements View.OnClickListener
 
                 if (sd.getHeating_stage_1() == 0) {
                     heating_stage1val = 0;
-                    heatingStage1.setText("OFF");
-                    heatingStage1.setTextColor(getResources().getColor(R.color.black));
+                    heatingStage1.setChecked(false);
+//                    heatingStage1.setText("OFF");
+//                    heatingStage1.setTextColor(getResources().getColor(R.color.black));
                 } else if (sd.getHeating_stage_1() == 1) {
                     heating_stage1val = 1;
-                    heatingStage1.setText("ON");
-                    heatingStage1.setTextColor(getResources().getColor(R.color.primary));
+                    heatingStage1.setChecked(true);
+//                    heatingStage1.setText("ON");
+//                    heatingStage1.setTextColor(getResources().getColor(R.color.primary));
                 } else if (sd.getHeating_stage_1() == -1) {
                     heating_stage1val = -1;
                     row5.setVisibility(View.GONE);
                 }
                 if (sd.getHeating_stage_2() == 0) {
                     heating_stage2val = 0;
-                    heatingStage2.setText("OFF");
-                    heatingStage2.setTextColor(getResources().getColor(R.color.black));
+                    heatingStage2.setChecked(false);
+//                    heatingStage2.setText("OFF");
+//                    heatingStage2.setTextColor(getResources().getColor(R.color.black));
                 } else if (sd.getHeating_stage_2() == 1) {
                     heating_stage2val = 1;
-                    heatingStage2.setText("ON");
-                    heatingStage2.setTextColor(getResources().getColor(R.color.primary));
+                    heatingStage2.setChecked(true);
+//                    heatingStage2.setText("ON");
+//                    heatingStage2.setTextColor(getResources().getColor(R.color.primary));
                 } else if (sd.getHeating_stage_2() == -1) {
                     heating_stage2val = -1;
                     row6.setVisibility(View.GONE);
@@ -372,18 +443,36 @@ public class SystemTestFragment extends Fragment implements View.OnClickListener
 
                 if (sd.getHumidifier() == 0) {
                     humidifierval = 0;
-                    humidifier.setText("OFF");
-                    humidifier.setTextColor(getResources().getColor(R.color.black));
+                    humidifier.setChecked(false);
+//                    humidifier.setText("OFF");
+//                    humidifier.setTextColor(getResources().getColor(R.color.black));
                 } else if (sd.getHumidifier() == 1) {
                     humidifierval = 1;
-                    humidifier.setText("ON");
-                    humidifier.setTextColor(getResources().getColor(R.color.primary));
+                    humidifier.setChecked(true);
+//                    humidifier.setText("ON");
+//                    humidifier.setTextColor(getResources().getColor(R.color.primary));
                 } else if (sd.getHumidifier() == -1) {
                     humidifierval = -1;
                     row7.setVisibility(View.GONE);
                 }
+                if (sd.getAnalog1_type() == -1) {
+                    analog1position = -1;
+                    row8.setVisibility(View.GONE);
+                }
+                if (sd.getAnalog2_type() == -1) {
+                    analog2position = -1;
+                    row9.setVisibility(View.GONE);
+                }
+                if (sd.getAnalog3_type() == -1) {
+                    analog3position = -1;
+                    row10.setVisibility(View.GONE);
+                }
+                if (sd.getAnalog4_type() == -1) {
+                    analog4position = -1;
+                    row11.setVisibility(View.GONE);
+                }
 
-//                analog1.setValue(sd.getAnalog1_damperPos());
+
                 analog1.setSelection(sd.getAnalog1_damperPos());
                 analog2.setSelection(sd.getAnalog2_damperPos());
                 analog3.setSelection(sd.getAnalog3_damperPos());
@@ -401,14 +490,9 @@ public class SystemTestFragment extends Fragment implements View.OnClickListener
                 fanStage2.setOnClickListener(SystemTestFragment.this);
                 heatingStage1.setOnClickListener(SystemTestFragment.this);
                 heatingStage2.setOnClickListener(SystemTestFragment.this);
-                analog1.setOnItemSelectedListener(this);
-                analog2.setOnItemSelectedListener(this);
-                analog3.setOnItemSelectedListener(this);
-                analog4.setOnItemSelectedListener(this);
                 humidifier.setOnClickListener(SystemTestFragment.this);
-                if (Pleasewait != null && Pleasewait.isShowing()) {
-                    Pleasewait.dismiss();
-                }
+                dismissDialog();
+                checkForOtpEveryMinute();
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -416,13 +500,80 @@ public class SystemTestFragment extends Fragment implements View.OnClickListener
         }
     }
 
+    public void checkForOtpEveryMinute() {
+        if (CCU_Details.getSingletonContext().systemTestHandler == null) {
+            CCU_Details.getSingletonContext().systemTestHandler = new Handler();
+        }
+
+        CCU_Details.getSingletonContext().systemTestUpdate = new Runnable() {
+            @Override
+            public void run() {
+                if (CCU_Details.getSingletonContext() != null && CCU_Details.getSingletonContext().viewPager.getCurrentItem() == 2) {
+                    Log.e("checkingotpsystemtest", "yes");
+                    if (Generic_Methods.isNetworkAvailable(CCU_Details.getSingletonContext())) {
+                        Query newquery = new Query();
+                        newquery.equals("_id", getArguments().getString("ccu_id"));
+                        AsyncAppData<GenericJson> summary = Generic_Methods.getKinveyClient().appData("00CCUOneTimePassword", GenericJson.class);
+                        summary.get(newquery, new KinveyListCallback<GenericJson>() {
+
+                            @Override
+                            public void onSuccess(GenericJson[] genericJsons) {
+                                if (genericJsons.length == 0) {
+                                    Otp_Verification otp_verification = new Otp_Verification(CCU_Details.getSingletonContext(), getArguments().getString("ccu_id"), 2);
+                                    otp_verification.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                                    otp_verification.show();
+                                } else if (genericJsons.length == 1) {
+                                    try {
+                                        JSONObject s = new JSONObject(genericJsons[0].toString());
+                                        if (!Generic_Methods.getStringPreference(CCU_Details.getSingletonContext(), "otp", "lastotp").equalsIgnoreCase(s.getString("oneTimePassword"))) {
+                                            Otp_Verification otp_verification = new Otp_Verification(CCU_Details.getSingletonContext(), getArguments().getString("ccu_id"), 2);
+                                            otp_verification.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                                            otp_verification.show();
+                                        }
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Throwable throwable) {
+                                Otp_Verification otp_verification = new Otp_Verification(CCU_Details.getSingletonContext(), getArguments().getString("ccu_id"), 2);
+                                otp_verification.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                                otp_verification.show();
+                            }
+                        });
+
+                    } else {
+                        Generic_Methods.getToast(CCU_Details.getSingletonContext(), getResources().getString(R.string.user_offline));
+                    }
+                    if (CCU_Details.getSingletonContext().systemTestHandler != null) {
+                        CCU_Details.getSingletonContext().systemTestHandler.postDelayed(CCU_Details.getSingletonContext().systemTestUpdate, 60000);
+                    }
+                }
+
+            }
+        };
+
+        if (CCU_Details.getSingletonContext().systemTestHandler != null) {
+            CCU_Details.getSingletonContext().systemTestHandler.postDelayed(CCU_Details.getSingletonContext().systemTestUpdate, 60000);
+        }
+
+    }
+
     public void PubnubCall() {
         if (Generic_Methods.isNetworkAvailable(CCU_Details.getSingletonContext())) {
-            String channel = getArguments().getString("ccu_id") + "_Installer_SYSTEST";
-            String msg = Generic_Methods.createPubnubSystemTestMsg(analog1position, analog2position,
-                    analog3position, analog4position, cooling_stage1val, cooling_stage2val, fan_stage1val, fan_stage2val,
-                    heating_stage1val, heating_stage2val, humidifierval);
-            Generic_Methods.PublishToChannel(channel, msg);
+            Thread h = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    String channel = getArguments().getString("ccu_id") + "_Installer_SYSTEST";
+                    String msg = Generic_Methods.createPubnubSystemTestMsg(analog1position, analog2position,
+                            analog3position, analog4position, cooling_stage1val, cooling_stage2val, fan_stage1val, fan_stage2val,
+                            heating_stage1val, heating_stage2val, humidifierval);
+                    Generic_Methods.PublishToChannel(channel, msg);
+                }
+            });
+            h.start();
         } else {
             Generic_Methods.getToast(CCU_Details.getSingletonContext(), getResources().getString(R.string.user_offline));
         }
@@ -442,31 +593,12 @@ public class SystemTestFragment extends Fragment implements View.OnClickListener
 
     }
 
-    @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        switch (view.getId()) {
-            case (R.id.analog1):
-                analog1position = (int) parent.getItemAtPosition(position);
-                PubnubCall();
-                break;
-            case (R.id.analog2):
-                analog2position = (int) parent.getItemAtPosition(position);
-                PubnubCall();
-                break;
-            case (R.id.analog3):
-                analog3position = (int) parent.getItemAtPosition(position);
-                PubnubCall();
-                break;
-            case (R.id.analog4):
-                analog4position = (int) parent.getItemAtPosition(position);
-                PubnubCall();
-                break;
+    public void dismissDialog() {
+        if (Pleasewait != null) {
+            if (Pleasewait.isShowing()) {
+                Pleasewait.dismiss();
+                Pleasewait = null;
+            }
         }
-
-    }
-
-    @Override
-    public void onNothingSelected(AdapterView<?> parent) {
-
     }
 }

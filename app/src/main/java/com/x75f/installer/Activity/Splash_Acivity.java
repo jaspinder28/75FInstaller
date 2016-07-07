@@ -96,6 +96,8 @@ public class Splash_Acivity extends AppCompatActivity {
 
     }
 
+
+
     public void checkIfUserIsOfTypeInstaller(User user) {
         String useremail = user.getUsername();
         Query userType = new Query();

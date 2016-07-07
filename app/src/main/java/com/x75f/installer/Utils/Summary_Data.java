@@ -34,6 +34,10 @@ public class Summary_Data implements Serializable {
     private int analog1_damperPos;
     private int analog2_damperPos;
     private int analog3_damperPos;
+    private int analog1_type;
+    private int analog2_type;
+    private int analog3_type;
+    private int analog4_type;
     private int analog4_damperPos;
     private double mInsideAirEnthalpy;
     private double mOutsideAirEnthalpy;
@@ -109,7 +113,7 @@ public class Summary_Data implements Serializable {
                         double mInsideAirEnthalpy, double mOutsideAirEnthalpy, int mOutsideAirTemperature, int mOutsideAirMaxTemp, int mOutsideAirMinTemp, int mOutsideAirHumidity,
                         int mOutsideAirMaxHumidity, int mOutsideAirMinHumidity, int mCO2Level, int mCO2LevelThreshold, int mMixedAirTemperature, int mReturnAirTemperature,
                         int mDamperPos, String zone_summary, int mNO2Level, int mNO2LevelThreshold, int mCOLevel, int mCOLevelThreshold, boolean isPressureSensorPaired, double mPressureLevel,
-                        double mPressureLevelThreshold,boolean isCOPaired,boolean isNO2Paired) {
+                        double mPressureLevelThreshold,boolean isCOPaired,boolean isNO2Paired,int analog1_type,int analog2_type,int analog3_type,int analog4_type) {
         this.ccu_name = ccu_name;
         this.date_time = date_time;
         this.building_no_cooler = building_no_cooler;
@@ -154,6 +158,10 @@ public class Summary_Data implements Serializable {
         this.mPressureLevelThreshold = mPressureLevelThreshold;
         this.isCOPaired = isCOPaired;
         this.isNO2Paired = isNO2Paired;
+        this.analog1_type = analog1_type;
+        this.analog2_type = analog2_type;
+        this.analog3_type = analog3_type;
+        this.analog4_type = analog4_type;
     }
 
     public Summary_Data(String ccu_name, String date_time, int building_no_cooler, int building_no_hotter, int user_no_cooler, int user_no_hotter, int cm_cur_temp, int cm_cur_humidity,
@@ -161,7 +169,7 @@ public class Summary_Data implements Serializable {
                         boolean isEconomizerAvailable, boolean isPaired, int analog1_damperPos, int analog2_damperPos, int analog3_damperPos, int analog4_damperPos,
                         double mInsideAirEnthalpy, double mOutsideAirEnthalpy, int mOutsideAirTemperature, int mOutsideAirMaxTemp, int mOutsideAirMinTemp, int mOutsideAirHumidity,
                         int mOutsideAirMaxHumidity, int mOutsideAirMinHumidity, int mMixedAirTemperature, int mReturnAirTemperature,
-                        int mDamperPos, String zone_summary, boolean isPressureSensorPaired, double mPressureLevel, double mPressureLevelThreshold) {
+                        int mDamperPos, String zone_summary, boolean isPressureSensorPaired, double mPressureLevel, double mPressureLevelThreshold,int analog1_type,int analog2_type,int analog3_type,int analog4_type) {
         this.ccu_name = ccu_name;
         this.date_time = date_time;
         this.building_no_cooler = building_no_cooler;
@@ -200,6 +208,26 @@ public class Summary_Data implements Serializable {
         this.isPressureSensorPaired = isPressureSensorPaired;
         this.mPressureLevel = mPressureLevel;
         this.mPressureLevelThreshold = mPressureLevelThreshold;
+        this.analog1_type = analog1_type;
+        this.analog2_type = analog2_type;
+        this.analog3_type = analog3_type;
+        this.analog4_type = analog4_type;
+    }
+
+    public int getAnalog1_type() {
+        return analog1_type;
+    }
+
+    public int getAnalog2_type() {
+        return analog2_type;
+    }
+
+    public int getAnalog3_type() {
+        return analog3_type;
+    }
+
+    public int getAnalog4_type() {
+        return analog4_type;
     }
 
     public int getmMixedAirTemperature() {

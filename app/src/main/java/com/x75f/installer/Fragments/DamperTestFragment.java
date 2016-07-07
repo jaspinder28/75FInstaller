@@ -1,7 +1,10 @@
 package com.x75f.installer.Fragments;
 
 import android.app.ProgressDialog;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -19,6 +22,7 @@ import com.kinvey.android.AsyncAppData;
 import com.kinvey.android.callback.KinveyListCallback;
 import com.kinvey.java.Query;
 import com.x75f.installer.Activity.CCU_Details;
+import com.x75f.installer.Activity.Otp_Verification;
 import com.x75f.installer.Adapters.Damper_test_Adapter;
 import com.x75f.installer.R;
 import com.x75f.installer.Utils.Damper_test_row_data;
@@ -58,49 +62,59 @@ public class DamperTestFragment extends Fragment implements SeekBar.OnSeekBarCha
         return v;
     }
 
+//    @Override
+//    public void setMenuVisibility(boolean menuVisible) {
+//        super.setMenuVisibility(menuVisible);
+//
+//    }
+
+
     @Override
-    public void setMenuVisibility(boolean menuVisible) {
-        super.setMenuVisibility(menuVisible);
-        if (isVisible() && CCU_Details.viewPager.getCurrentItem() == 3) {
-            Generic_Methods.PauseCalled();
-            Generic_Methods.PauseCalled1();
+    public void onPause() {
+        super.onPause();
+        dismissDialog();
+//        Generic_Methods.getToast(CCU_Details.getSingletonContext(),"ONPAUSEDAMPERTEST");
+        if (CCU_Details.getSingletonContext().damperTestHandler != null && CCU_Details.getSingletonContext().damperTestUpdate != null) {
+            CCU_Details.getSingletonContext().damperTestHandler.removeCallbacks(CCU_Details.getSingletonContext().damperTestUpdate);
+            CCU_Details.getSingletonContext().damperTestHandler = null;
+            CCU_Details.getSingletonContext().damperTestUpdate = null;
+
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (isVisible() && CCU_Details.getSingletonContext().viewPager.getCurrentItem() == 3) {
+//            Generic_Methods.getToast(CCU_Details.getSingletonContext(),"ONRESUMEDAMPERTEST");
             Log.d("dampertest", "yes");
+            CCU_Details.getSingletonContext().damperTestHandler = new Handler();
             QuerySummaryData();
         }
     }
 
     public void QuerySummaryData() {
-        if (isVisible() && CCU_Details.viewPager.getCurrentItem() == 3) {
+        if (isVisible() && CCU_Details.getSingletonContext().viewPager.getCurrentItem() == 3) {
             Query newquery = new Query();
             newquery.equals("ccu_name", ccuname);
             if (Generic_Methods.isNetworkAvailable(CCU_Details.getSingletonContext())) {
                 if (Pleasewait == null) {
                     Pleasewait = ProgressDialog.show(CCU_Details.getSingletonContext(), "", "Please Wait...");
                 }
-
+                Generic_Methods.getToast(CCU_Details.getSingletonContext(),"DAMPERDATA");
                 AsyncAppData<GenericJson> summary = Generic_Methods.getKinveyClient().appData("00CCUSummary", GenericJson.class);
                 summary.get(newquery, new KinveyListCallback<GenericJson>() {
                     @Override
                     public void onSuccess(GenericJson[] genericJsons) {
-                        try {
-                            if (Pleasewait != null && Pleasewait.isShowing()) {
-                                Pleasewait.dismiss();
-                                Pleasewait = null;
-                            }
+                            dismissDialog();
                             String Summarydata = genericJsons[0].toString();
                             UpdateData(Summarydata);
 
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
                     }
 
                     @Override
                     public void onFailure(Throwable throwable) {
-                        if (Pleasewait != null && Pleasewait.isShowing()) {
-                            Pleasewait.dismiss();
-                            Pleasewait = null;
-                        }
+                        dismissDialog();
                         Toast.makeText(getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -113,13 +127,16 @@ public class DamperTestFragment extends Fragment implements SeekBar.OnSeekBarCha
 
     public void UpdateData(String Summarydata) {
         try {
+            checkForOtpEveryMinute();
             JSONObject s = new JSONObject(Summarydata);
             String zone_summary = s.getString("zone_summary");
             JSONArray zone_summarydata = new JSONArray(zone_summary);
             zoneDatas = new ArrayList<>();
             for (int i = 0; i < zone_summarydata.length(); i++) {
                 JSONObject object = new JSONObject(zone_summarydata.get(i).toString());
-                zoneDatas.add(new Damper_test_row_data(object.getString("name"), object.getInt("damper_pos"), object.getInt("fsv_address")));
+                if (!object.getString("name").equalsIgnoreCase("CO") && !object.getString("name").equalsIgnoreCase("NO2") && !object.getString("name").equalsIgnoreCase("Pressure Sensor")) {
+                    zoneDatas.add(new Damper_test_row_data(object.getString("name"), object.getInt("damper_pos"), object.getInt("fsv_address")));
+                }
             }
 
             if (zoneDatas.size() != 0) {
@@ -178,5 +195,75 @@ public class DamperTestFragment extends Fragment implements SeekBar.OnSeekBarCha
         });
         h.start();
 
+    }
+
+    public void checkForOtpEveryMinute() {
+        if (CCU_Details.getSingletonContext().damperTestHandler == null) {
+            CCU_Details.getSingletonContext().damperTestHandler = new Handler();
+        }
+
+        CCU_Details.getSingletonContext().damperTestUpdate = new Runnable() {
+            @Override
+            public void run() {
+                if (CCU_Details.getSingletonContext() != null && CCU_Details.getSingletonContext().viewPager.getCurrentItem() == 3) {
+                    Log.e("checkingotpdamper", "yes");
+                    if (Generic_Methods.isNetworkAvailable(CCU_Details.getSingletonContext())) {
+                        Query newquery = new Query();
+                        newquery.equals("_id", getArguments().getString("ccu_id"));
+                        AsyncAppData<GenericJson> summary = Generic_Methods.getKinveyClient().appData("00CCUOneTimePassword", GenericJson.class);
+                        summary.get(newquery, new KinveyListCallback<GenericJson>() {
+
+                            @Override
+                            public void onSuccess(GenericJson[] genericJsons) {
+                                if (genericJsons.length == 0) {
+                                    Otp_Verification otp_verification = new Otp_Verification(CCU_Details.getSingletonContext(), getArguments().getString("ccu_id"), 3);
+                                    otp_verification.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                                    otp_verification.show();
+                                } else if (genericJsons.length == 1) {
+                                    try {
+                                        JSONObject s = new JSONObject(genericJsons[0].toString());
+                                        if (!Generic_Methods.getStringPreference(CCU_Details.getSingletonContext(), "otp", "lastotp").equalsIgnoreCase(s.getString("oneTimePassword"))) {
+                                            Otp_Verification otp_verification = new Otp_Verification(CCU_Details.getSingletonContext(), getArguments().getString("ccu_id"), 2);
+                                            otp_verification.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                                            otp_verification.show();
+                                        }
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Throwable throwable) {
+                                Otp_Verification otp_verification = new Otp_Verification(CCU_Details.getSingletonContext(), getArguments().getString("ccu_id"), 3);
+                                otp_verification.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                                otp_verification.show();
+                            }
+                        });
+
+                    } else {
+                        Generic_Methods.getToast(CCU_Details.getSingletonContext(), getResources().getString(R.string.user_offline));
+                    }
+                    if (CCU_Details.getSingletonContext().damperTestHandler != null) {
+                        CCU_Details.getSingletonContext().damperTestHandler.postDelayed(CCU_Details.getSingletonContext().damperTestUpdate, 60000);
+                    }
+                }
+
+            }
+        };
+
+        if (CCU_Details.getSingletonContext().damperTestHandler != null) {
+            CCU_Details.getSingletonContext().damperTestHandler.postDelayed(CCU_Details.getSingletonContext().damperTestUpdate, 60000);
+        }
+
+    }
+
+    public void dismissDialog() {
+        if (Pleasewait != null) {
+            if (Pleasewait.isShowing()) {
+                Pleasewait.dismiss();
+                Pleasewait = null;
+            }
+        }
     }
 }

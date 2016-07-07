@@ -8,5 +8,6 @@
     <string name="wrong_otp">Wrong OTP is entered.Please enter valid OTP.</string>
     <string name="forgot_pass">Forgot Password?</string>
     <string name="invalid_email">Please enter valid email Address.</string>
+    <string name="otp_expired">OTP has expired.Please generate OTP again.</string>
 
 </resources>

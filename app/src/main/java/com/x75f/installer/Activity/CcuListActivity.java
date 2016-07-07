@@ -64,6 +64,30 @@ public class CcuListActivity extends AppCompatActivity implements SearchView.OnQ
 
         tool_bar.setTitle("Welcome " + getIntent().getStringExtra("email"));
         setSupportActionBar(tool_bar);
+
+        if (Build.VERSION.SDK_INT >= 23) {
+            if (ContextCompat.checkSelfPermission(CcuListActivity.this, Manifest.permission.GET_ACCOUNTS)
+                    != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(CcuListActivity.this, android.Manifest.permission.GET_ACCOUNTS)
+                    != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(CcuListActivity.this,
+                        new String[]{android.Manifest.permission.GET_ACCOUNTS, android.Manifest.permission.GET_ACCOUNTS},
+                        1);
+            }
+        }
+
+    }
+
+    private void setupSearchView() {
+        SearchCcuNameAddress.setIconifiedByDefault(false);
+        SearchCcuNameAddress.setOnQueryTextListener(this);
+        SearchCcuNameAddress.setSubmitButtonEnabled(true);
+        SearchCcuNameAddress.setQueryHint("Search Here");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        _singleton = this;
         search = new ArrayList<>();
         if (!search.isEmpty()) {
             search.clear();
@@ -74,9 +98,9 @@ public class CcuListActivity extends AppCompatActivity implements SearchView.OnQ
         for (int i = 0; i < users.size(); i++) {
             search.add(users.get(i).getCcuName());
             sqLlite.insertdata(users.get(i).getUsername(), 0);
-
-
         }
+
+
         ArrayAdapter<String> adapter = new ArrayAdapter<>(CcuListActivity.this, android.R.layout.simple_list_item_1, android.R.id.text1, search);
         filter = adapter.getFilter();
 //        SearchCcuNameAddress.setAdapter(adapter);
@@ -90,23 +114,7 @@ public class CcuListActivity extends AppCompatActivity implements SearchView.OnQ
 
         }
 
-        if (Build.VERSION.SDK_INT >= 23) {
-            if (ContextCompat.checkSelfPermission(CcuListActivity.this, Manifest.permission.GET_ACCOUNTS)
-                    != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(CcuListActivity.this, android.Manifest.permission.GET_ACCOUNTS)
-                    != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(CcuListActivity.this,
-                        new String[]{android.Manifest.permission.GET_ACCOUNTS, android.Manifest.permission.GET_ACCOUNTS},
-                        1);
-            }
-        }
         setupSearchView();
-    }
-
-    private void setupSearchView() {
-        SearchCcuNameAddress.setIconifiedByDefault(false);
-        SearchCcuNameAddress.setOnQueryTextListener(this);
-        SearchCcuNameAddress.setSubmitButtonEnabled(true);
-        SearchCcuNameAddress.setQueryHint("Search Here");
     }
 
     @Override
@@ -204,12 +212,14 @@ public class CcuListActivity extends AppCompatActivity implements SearchView.OnQ
             public void run() {
                 users = null;
                 search = null;
+//                sqLlite.updateEntire();
                 Generic_Methods.createEditSummarySharedPreference(CcuListActivity.getSingletonContext(), "");
                 Generic_Methods.unbindDrawables(findViewById(R.id.main_layout));
 
             }
         };
         h.run();
+
 
     }
 

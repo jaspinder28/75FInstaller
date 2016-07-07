@@ -12,10 +12,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.api.client.json.GenericJson;
 import com.kinvey.android.AsyncAppData;
@@ -35,9 +33,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
-
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -105,8 +100,7 @@ public class Summary_Fragment extends Fragment {
     TextView user_limit;
     String ccuname;
     String ccuid;
-    Handler h = new Handler();
-    Runnable update;
+
     private static ProgressDialog Pleasewait = null;
 
     @Override
@@ -115,37 +109,6 @@ public class Summary_Fragment extends Fragment {
 
     }
 
-    @Override
-    public void setMenuVisibility(boolean menuVisible) {
-        super.setMenuVisibility(menuVisible);
-
-        if (Summary_Fragment.this != null && isVisible() && CCU_Details.viewPager.getCurrentItem() == 0) {
-            h.removeCallbacks(update);
-            Generic_Methods.PauseCalled();
-            getData();
-            Generic_Methods.PauseCalled1();
-            Generic_Methods.FetchSummaryData(getArguments().getString("ccu_id"));
-            update = new Runnable() {
-                @Override
-                public void run() {
-                    String s = Generic_Methods.getStringPreference(CCU_Details.getSingletonContext(), "summary", "summarydata");
-                    QueryDataAgain(s);
-                    h.postDelayed(update, 60000);
-                }
-            };
-            h.postDelayed(update, 60000);
-        } else {
-            h.removeCallbacks(update);
-
-        }
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        h.removeCallbacks(update);
-        Generic_Methods.PauseCalled();
-    }
 
     @Nullable
     @Override
@@ -161,62 +124,9 @@ public class Summary_Fragment extends Fragment {
 
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        if (CCU_Details.getSingletonContext() != null && CCU_Details.viewPager.getCurrentItem() == 0) {
-            h.removeCallbacks(update);
-            Generic_Methods.PauseCalled();
-            getData();
-            Generic_Methods.PauseCalled1();
-            Generic_Methods.FetchSummaryData(getArguments().getString("ccu_id"));
-            update = new Runnable() {
-                @Override
-                public void run() {
-                    String s = Generic_Methods.getStringPreference(CCU_Details.getSingletonContext(), "summary", "summarydata");
-                    QueryDataAgain(s);
-                    h.postDelayed(update, 60000);
-                }
-            };
-            h.postDelayed(update, 60000);
-        }
-    }
-
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
-        if (isVisible()) {
-            if (Summary_Fragment.this != null && isVisible() && CCU_Details.viewPager.getCurrentItem() == 0) {
-                h.removeCallbacks(update);
-                Generic_Methods.PauseCalled();
-                getData();
-                Generic_Methods.FetchSummaryData(getArguments().getString("ccu_id"));
-                update = new Runnable() {
-                    @Override
-                    public void run() {
-                        String s = Generic_Methods.getStringPreference(CCU_Details.getSingletonContext(), "summary", "summarydata");
-                        QueryDataAgain(s);
-                        h.postDelayed(update, 60000);
-                        if (Pleasewait != null && Pleasewait.isShowing()) {
-                            Pleasewait.dismiss();
-                            Pleasewait = null;
-                        }
-                    }
-                };
-                h.postDelayed(update, 60000);
-            } else {
-                h.removeCallbacks(update);
-            }
-
-
-        }
-    }
-
 
     public void QueryDataAgain(String s) {
-        if (Summary_Fragment.this != null && isVisible() && CCU_Details.viewPager.getCurrentItem() == 0) {
+        if (Summary_Fragment.this != null && isVisible() && CCU_Details.getSingletonContext().viewPager.getCurrentItem() == 0) {
 
             if (Generic_Methods.isNetworkAvailable(CCU_Details.getSingletonContext())) {
                 if (Pleasewait == null) {
@@ -227,14 +137,11 @@ public class Summary_Fragment extends Fragment {
 
             } else {
                 Generic_Methods.getToast(CCU_Details.getSingletonContext(), getResources().getString(R.string.user_offline));
-                if (Pleasewait != null && Pleasewait.isShowing()) {
-                    Pleasewait.dismiss();
-                    Pleasewait = null;
-                }
+                dismissDialog();
             }
         } else {
-            h.removeCallbacks(update);
-            Generic_Methods.PauseCalled();
+            CCU_Details.getSingletonContext().summaryHandler.removeCallbacks(CCU_Details.getSingletonContext().summaryUpdate);
+            Generic_Methods.PauseCalledSummary();
         }
     }
 
@@ -255,7 +162,7 @@ public class Summary_Fragment extends Fragment {
                             s.optInt("mOutsideAirMinTemp", 0), s.optInt("mOutsideAirHumidity", 0), s.optInt("mOutsideAirMaxHumidity", 0), s.optInt("mOutsideAirMinHumidity", 0),
                             s.optInt("mCO2Level", 0), s.optInt("mCO2LevelThreshold", 2000), s.optInt("mMixedAirTemperature"), s.optInt("mReturnAirTemperature"), s.optInt("mDamperPos", 0), s.optString("zone_summary"),
                             s.optInt("mNO2Level", 0), s.optInt("mNO2LevelThreshold", 10), s.optInt("mCOLevel", 0), s.optInt("mCOLevelThreshold", 250), s.optBoolean("isPressureSensorPaired", false), s.optDouble("mPressureLevel", 0), s.optDouble("mPressureLevelThreshold", 0),
-                            s.optBoolean("isCOPaired", false), s.optBoolean("isNO2Paired", false));
+                            s.optBoolean("isCOPaired", false), s.optBoolean("isNO2Paired", false),s.optInt("analog1_type",-1),s.optInt("analog2_type",-1),s.optInt("analog3_type",-1),s.optInt("analog4_type",-1));
 
                 } else {
                     sd = new Summary_Data(s.optString("ccu_name", ""), s.optString("date_time", ""), s.optInt("building_no_cooler", 0),
@@ -271,7 +178,7 @@ public class Summary_Fragment extends Fragment {
                             s.optInt("mOutsideAirMinHumidity", 0),
                             s.optInt("mMixedAirTemperature", 0), s.optInt("mReturnAirTemperature", 0),
                             s.optInt("mDamperPos", 0), s.optString("zone_summary"),
-                            s.optBoolean("isPressureSensorPaired", false), s.optDouble("mPressureLevel", 0), s.optDouble("mPressureLevelThreshold", 0));
+                            s.optBoolean("isPressureSensorPaired", false), s.optDouble("mPressureLevel", 0), s.optDouble("mPressureLevelThreshold", 0),s.optInt("analog1_type",-1),s.optInt("analog2_type",-1),s.optInt("analog3_type",-1),s.optInt("analog4_type",-1));
                 }
 
                 if (sd.getCooling_stage_1() == 0) {
@@ -419,7 +326,6 @@ public class Summary_Fragment extends Fragment {
 
         @Override
         protected void onPostExecute(Summary_Data sd) {
-            try {
                 Log.d("done", "dataloaded");
 
                 timezone.setText(sd.getDate_time());
@@ -475,8 +381,8 @@ public class Summary_Fragment extends Fragment {
                 hvac_equipment_detail5.setText("Analog(" + sd.getAnalog1_damperPos() + "/" + sd.getAnalog2_damperPos() + "/" + sd.getAnalog3_damperPos() + "/" + sd.getAnalog4_damperPos() + ")");
 
                 economiser_detail.setText("Enthalpy(In:" + String.format("%.1f", sd.getmInsideAirEnthalpy()) + ")/(Out:" + String.format("%.1f", sd.getmOutsideAirEnthalpy()) + ")");
-                economiser_detail1.setText("Outside Temp:" + sd.getmOutsideAirTemperature() + "(" + sd.getmOutsideAirMinTemp() + "/" + sd.getmOutsideAirMaxTemp() + ")");
-                economiser_detail2.setText("Outside Humidity:" + sd.getmOutsideAirHumidity() + "(" + sd.getmOutsideAirMinHumidity() + "/" + sd.getmOutsideAirMaxHumidity() + ")");
+                economiser_detail1.setText("Outside Temp:" + sd.getmOutsideAirTemperature() + "(" + sd.getmOutsideAirMinTemp() + "-" + sd.getmOutsideAirMaxTemp() + ")");
+                economiser_detail2.setText("Outside Humidity:" + sd.getmOutsideAirHumidity() + "(" + sd.getmOutsideAirMinHumidity() + "-" + sd.getmOutsideAirMaxHumidity() + ")");
                 economiser_detail3.setText("Damper Pos:" + sd.getmDamperPos());
                 economiser_detail4.setText("MAT:" + sd.getmMixedAirTemperature() + "/RAT:" + sd.getmReturnAirTemperature());
                 if (sd.isPaired()) {
@@ -506,14 +412,8 @@ public class Summary_Fragment extends Fragment {
                 } else {
                     pressure_sensor.setText("NA");
                 }
-                if (Pleasewait != null && Pleasewait.isShowing()) {
-                    Pleasewait.dismiss();
-                    Pleasewait = null;
-                }
-            } catch (Exception e) {
-                Log.d("writing", e.getStackTrace().toString());
-                e.printStackTrace();
-            }
+                dismissDialog();
+
         }
     }
 
@@ -530,29 +430,117 @@ public class Summary_Fragment extends Fragment {
 
     }
 
-    public void getData() {
-        if (Generic_Methods.isNetworkAvailable(CCU_Details.getSingletonContext())) {
-            Query newquery = new Query();
-            newquery.equals("_id", getArguments().getString("ccu_id"));
-            AsyncAppData<GenericJson> summary = Generic_Methods.getKinveyClient().appData("00CCUSummary", GenericJson.class);
-            if (summary.isOnline()) {
+    public void GetData() {
+        if (Pleasewait == null) {
+            Pleasewait = ProgressDialog.show(CCU_Details.getSingletonContext(), "", "Please Wait...");
+        }
 
-                summary.get(newquery, new KinveyListCallback<GenericJson>() {
+        Query newquery = new Query();
+        newquery.equals("_id", getArguments().getString("ccu_id"));
+        AsyncAppData<GenericJson> summary = Generic_Methods.getKinveyClient().appData("00CCUSummary", GenericJson.class);
+        Log.e("getdata", "jhbacs");
+        if (summary.isOnline()) {
+            Log.e("getdata1", "jhbacs1");
+            summary.get(newquery, new KinveyListCallback<GenericJson>() {
 
-                    @Override
-                    public void onSuccess(GenericJson[] genericJsons) {
-                        QueryDataAgain(genericJsons[0].toString());
-                    }
+                @Override
+                public void onSuccess(final GenericJson[] genericJsons) {
+                    Log.e("getdata2", "jhbacs2");
+                    dismissDialog();
+                    getData(genericJsons[0].toString());
 
-                    @Override
-                    public void onFailure(Throwable throwable) {
-                        Log.e("result", "failed");
-                    }
-                });
+
+                }
+
+                @Override
+                public void onFailure(Throwable throwable) {
+                    Log.e("result", "failed");
+                    dismissDialog();
+                }
+            });
+        }
+
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.e("onpause", "onpusesummary");
+        dismissDialog();
+        if (CCU_Details.getSingletonContext().summaryHandler != null && CCU_Details.getSingletonContext().summaryUpdate != null) {
+            CCU_Details.getSingletonContext().summaryHandler.removeCallbacks(CCU_Details.getSingletonContext().summaryUpdate);
+            CCU_Details.getSingletonContext().summaryHandler = null;
+            CCU_Details.getSingletonContext().summaryUpdate = null;
+            Generic_Methods.PauseCalledSummary();
+            Log.e("onpause", "threadcancel");
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.e("onresume", "onresume");
+        if (CCU_Details.getSingletonContext() != null && CCU_Details.getSingletonContext().viewPager.getCurrentItem() == 0) {
+
+            CCU_Details.getSingletonContext().summaryHandler = new Handler();
+
+            dismissDialog();
+            if (Generic_Methods.isNetworkAvailable(CCU_Details.getSingletonContext())) {
+                GetData();
+            } else {
+                Generic_Methods.getToast(CCU_Details.getSingletonContext(), getResources().getString(R.string.user_offline));
             }
-        } else {
-            Generic_Methods.getToast(CCU_Details.getSingletonContext(), getResources().getString(R.string.user_offline));
-            if (Pleasewait != null && Pleasewait.isShowing()) {
+        }
+    }
+
+
+    public void getData(String genericJson) {
+        if (CCU_Details.getSingletonContext().summaryHandler == null)
+            CCU_Details.getSingletonContext().summaryHandler = new Handler();
+        dismissDialog();
+        if (genericJson != null && !genericJson.equalsIgnoreCase("")) {
+            QueryDataAgain(genericJson);
+        }
+
+        Generic_Methods.FetchSummaryData(getArguments().getString("ccu_id"));
+        Log.e("updating", "getdata");
+        CCU_Details.getSingletonContext().summaryUpdate = new Runnable() {
+            @Override
+            public void run() {
+                Log.e("updating1", "getdata1");
+                if (getActivity() != null && CCU_Details.getSingletonContext().viewPager.getCurrentItem() == 0) {
+                    if (Generic_Methods.isNetworkAvailable(CCU_Details.getSingletonContext())) {
+                        Log.e("updating2", "getdata2");
+                        String s = Generic_Methods.getStringPreference(CCU_Details.getSingletonContext(), "summary", "summarydata");
+                        QueryDataAgain(s);
+                        if (CCU_Details.getSingletonContext().summaryHandler != null) {
+                            CCU_Details.getSingletonContext().summaryHandler.postDelayed(CCU_Details.getSingletonContext().summaryUpdate, 60000);
+                        }
+                        dismissDialog();
+                    } else {
+                        Generic_Methods.getToast(CCU_Details.getSingletonContext(), getResources().getString(R.string.user_offline));
+                    }
+                } else {
+                    if (CCU_Details.getSingletonContext().summaryHandler != null && CCU_Details.getSingletonContext().summaryUpdate != null) {
+                        CCU_Details.getSingletonContext().summaryHandler.removeCallbacks(CCU_Details.getSingletonContext().summaryUpdate);
+                        CCU_Details.getSingletonContext().summaryHandler = null;
+                        CCU_Details.getSingletonContext().summaryUpdate = null;
+                    }
+                }
+            }
+
+        };
+        if (CCU_Details.getSingletonContext().summaryHandler != null) {
+            CCU_Details.getSingletonContext().summaryHandler.postDelayed(CCU_Details.getSingletonContext().summaryUpdate, 60000);
+        }
+
+
+    }
+
+
+    public void dismissDialog() {
+        if (Pleasewait != null) {
+            if (Pleasewait.isShowing()) {
                 Pleasewait.dismiss();
                 Pleasewait = null;
             }

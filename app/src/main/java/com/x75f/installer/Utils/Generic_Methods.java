@@ -16,6 +16,7 @@ import com.google.api.client.json.GenericJson;
 import com.kinvey.android.AsyncAppData;
 import com.kinvey.android.Client;
 import com.kinvey.android.callback.KinveyListCallback;
+import com.kinvey.android.callback.KinveyPingCallback;
 import com.kinvey.java.Query;
 import com.kinvey.java.query.AbstractQuery;
 import com.pubnub.api.Callback;
@@ -37,71 +38,95 @@ public class Generic_Methods {
     private static Pubnub pubnub;
     public static boolean initialized = false;
     private static Client mKinveyClient;
-    public static Handler h = new Handler();
-    public static Handler h1 = new Handler();
+    private static Handler summaryDataHandler;
+    public static Handler datalogDataHandler;
     private static String ccuid;
     private Generic_Methods mInstance;
-    public static Thread mThraed = new Thread(new Runnable() {
+    public static Thread mThreadSummary = new Thread(new Runnable() {
         @Override
         public void run() {
-            Query newquery = new Query();
-            newquery.equals("_id", ccuid);
-            AsyncAppData<GenericJson> summary = Generic_Methods.getKinveyClient().appData("00CCUSummary", GenericJson.class);
-            if (summary.isOnline()) {
-
-                summary.get(newquery, new KinveyListCallback<GenericJson>() {
-
-                    @Override
-                    public void onSuccess(GenericJson[] genericJsons) {
-                        Log.e("success",genericJsons[0].toString());
-                        createEditSummarySharedPreference(CCU_Details.getSingletonContext(), genericJsons[0].toString());
-                        h.postDelayed(mThraed, 60000);
-                    }
-
-                    @Override
-                    public void onFailure(Throwable throwable) {
-                        Log.e("result", "failed");
-                    }
-                });
+            if (summaryDataHandler != null) {
+                GettingSummaryData();
+            } else {
+                summaryDataHandler = new Handler();
+                GettingSummaryData();
             }
+        }
+    });
 
+    public static void GettingSummaryData() {
+        Log.e("FetchSummaryData", "step4");
+        Query newquery = new Query();
+        newquery.equals("_id", ccuid);
+        AsyncAppData<GenericJson> summary = Generic_Methods.getKinveyClient().appData("00CCUSummary", GenericJson.class);
+        if (summary.isOnline()) {
+            Log.e("FetchSummaryData", "step5");
+            summary.get(newquery, new KinveyListCallback<GenericJson>() {
+
+                @Override
+                public void onSuccess(GenericJson[] genericJsons) {
+                    Log.e("FetchSummaryData", "step6");
+                    Log.e("success", genericJsons[0].toString());
+                    createEditSummarySharedPreference(CCU_Details.getSingletonContext(), genericJsons[0].toString());
+                    if (summaryDataHandler != null) {
+                        summaryDataHandler.postDelayed(mThreadSummary, 60000);
+                    }
+                }
+
+                @Override
+                public void onFailure(Throwable throwable) {
+                    Log.e("result", "failed");
+                }
+            });
+        }
+    }
+
+
+    public static Thread mThraedtDatalog = new Thread(new Runnable() {
+        @Override
+        public void run() {
+            if (datalogDataHandler != null) {
+                GettingDatalogData();
+            } else {
+                datalogDataHandler = new Handler();
+                GettingDatalogData();
+            }
         }
     });
 
 
-    public static Thread mThraedtimeseries = new Thread(new Runnable() {
-        @Override
-        public void run() {
-            Query newquery = new Query();
-            String collectionName = ccuid + "SystemTS1";
-            newquery.addSort("date_time", AbstractQuery.SortOrder.DESC);
-            newquery.setLimit(1);
-            AsyncAppData<Data_Log> summary = Generic_Methods.getKinveyClient().appData(collectionName, Data_Log.class);
-            if (summary.isOnline()) {
+    public static void GettingDatalogData() {
 
-                summary.get(newquery, new KinveyListCallback<Data_Log>() {
+        Query newquery = new Query();
+        String collectionName = ccuid + "SystemTS1";
+        newquery.addSort("date_time", AbstractQuery.SortOrder.DESC);
+        newquery.setLimit(1);
+        AsyncAppData<Data_Log> summary = Generic_Methods.getKinveyClient().appData(collectionName, Data_Log.class);
+        if (summary.isOnline()) {
 
-                    @Override
-                    public void onSuccess(Data_Log[] data_logs) {
+            summary.get(newquery, new KinveyListCallback<Data_Log>() {
 
-                        if(data_logs.length !=0) {
-                            createEditDataLogSharedPreference(CCU_Details.getSingletonContext(), data_logs[0].toString());
-                            Log.e("success111",data_logs[0].toString());
-                        }else {
-                            createEditDataLogSharedPreference(CCU_Details.getSingletonContext(), "");
-                        }
-                        h1.postDelayed(mThraedtimeseries, 60000);
+                @Override
+                public void onSuccess(Data_Log[] data_logs) {
+
+                    if (data_logs.length != 0) {
+                        createEditDataLogSharedPreference(CCU_Details.getSingletonContext(), data_logs[0].toString());
+                        Log.e("success111", data_logs[0].toString());
+                    } else {
+                        createEditDataLogSharedPreference(CCU_Details.getSingletonContext(), "");
                     }
+                    if (datalogDataHandler != null)
+                        datalogDataHandler.postDelayed(mThraedtDatalog, 60000);
+                }
 
-                    @Override
-                    public void onFailure(Throwable throwable) {
-                        Log.e("result", "failed");
-                    }
-                });
-            }
-
+                @Override
+                public void onFailure(Throwable throwable) {
+                    Log.e("result", "failed");
+                }
+            });
         }
-    });
+
+    }
 
 
     Generic_Methods() {
@@ -121,12 +146,31 @@ public class Generic_Methods {
 
     public static Client getKinveyClient() {
 
+//        mKinveyClient.ping(new KinveyPingCallback() {
+//            @Override
+//            public void onSuccess(Boolean aBoolean) {
+//                Log.e("ping", "success");
+//            }
+//
+//            @Override
+//            public void onFailure(Throwable throwable) {
+//                Log.e("ping", "fail");
+//            }
+//        });
+
+
         return mKinveyClient;
     }
 
     public static void createEditSummarySharedPreference(Context c, String summary) {
         SharedPreferences.Editor editor = c.getSharedPreferences("summarydata", Context.MODE_PRIVATE).edit();
         editor.putString("summary", summary);
+        editor.apply();
+    }
+
+    public static void createEditLastOtp(Context c, String otp) {
+        SharedPreferences.Editor editor = c.getSharedPreferences("lastotp", Context.MODE_PRIVATE).edit();
+        editor.putString("otp", otp);
         editor.apply();
     }
 
@@ -198,7 +242,7 @@ public class Generic_Methods {
     };
 
     public static void PublishToChannel(String MY_PUBNUB_CHANNEL, String msg) {
-        Log.d("pubnubcall", msg);
+        Log.e("pubnubcall", msg);
         JSONObject x = null;
         try {
             x = new JSONObject(msg);
@@ -207,11 +251,11 @@ public class Generic_Methods {
         }
         Callback callback = new Callback() {
             public void successCallback(String channel, Object response) {
-                Log.d("pubnubresponse", response.toString());
+                Log.e("pubnubresponse", response.toString());
             }
 
             public void errorCallback(String channel, PubnubError error) {
-                Log.d("pubnubresponse", error.toString());
+                Log.e("pubnubresponse", error.toString());
             }
         };
 
@@ -246,6 +290,7 @@ public class Generic_Methods {
             e.printStackTrace();
         }
         x = LogObj.toString();
+        Log.e("pubnub",x);
         return x;
     }
 
@@ -289,59 +334,80 @@ public class Generic_Methods {
                 ((ViewGroup) view).removeAllViews();
             }
         } catch (Exception e) {
-            Log.d("drawableerror", e.getStackTrace().toString());
+            Log.e("drawableerror", e.getStackTrace().toString());
         }
     }
 
     public static String FetchSummaryData(final String ccuid1) {
+        Log.e("FetchSummaryData", "step1");
 
+        summaryDataHandler = new Handler();
         ccuid = ccuid1;
         try {
-            if (mThraed.isAlive()) {
-                h.postDelayed(mThraed, 30000);
+            if (mThreadSummary != null) {
+                Log.e("FetchSummaryData", "step2");
+                summaryDataHandler.postDelayed(mThreadSummary, 30000);
             } else {
-                mThraed.start();
+                Log.e("FetchSummaryData", "step3");
+                summaryDataHandler.postDelayed(mThreadSummary, 0);
             }
         } catch (Exception e) {
-            h.postDelayed(mThraed, 30000);
         }
 
         return null;
     }
 
-    public static void PauseCalled() {
+    public static void PauseCalledSummary() {
         try {
-            mThraed.interrupt();
-            h.removeCallbacks(mThraed);
+            if (mThreadSummary != null && summaryDataHandler != null) {
+
+                mThreadSummary.interrupt();
+                summaryDataHandler.removeCallbacks(mThreadSummary);
+//                mThreadSummary = null;
+                summaryDataHandler = null;
+
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
 
     }
 
-    public static void PauseCalled1() {
-        try {
-            mThraedtimeseries.interrupt();
-            h1.removeCallbacks(mThraedtimeseries);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-    }
 
     public static String FetchDatalogData(final String ccuid1) {
-
+        datalogDataHandler = new Handler();
         ccuid = ccuid1;
+//        Generic_Methods.getToast(CCU_Details.getSingletonContext(), "Threaddatalogstart");
         try {
-            if (mThraedtimeseries.isAlive()) {
-                h1.postDelayed(mThraedtimeseries, 30000);
+            if (mThraedtDatalog != null) {
+                datalogDataHandler.postDelayed(mThraedtDatalog, 30000);
+//                Generic_Methods.getToast(CCU_Details.getSingletonContext(), "ThreadSummaryStartstp1");
             } else {
-                mThraedtimeseries.start();
+                datalogDataHandler.postDelayed(mThraedtDatalog, 30000);
+//                Generic_Methods.getToast(CCU_Details.getSingletonContext(), "ThreadSummaryStartstp2");
             }
         } catch (Exception e) {
-            h1.postDelayed(mThraedtimeseries, 30000);
+            datalogDataHandler.postDelayed(mThraedtDatalog, 0);
+//            Generic_Methods.getToast(CCU_Details.getSingletonContext(), "ThreaddatalogStartException");
         }
 
         return null;
+    }
+
+    public static void PauseCalledDatalog() {
+        try {
+            if (mThraedtDatalog != null && datalogDataHandler != null) {
+
+                mThraedtDatalog.interrupt();
+                datalogDataHandler.removeCallbacks(mThraedtDatalog);
+//                mThraedtDatalog = null;
+                datalogDataHandler = null;
+//                Generic_Methods.getToast(CCU_Details.getSingletonContext(), "Threaddatalogpause");
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 }

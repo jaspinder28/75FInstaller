@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/main_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/main_layout"
     android:orientation="vertical">
 
     <ScrollView
@@ -36,19 +36,19 @@
                     android:layout_height="40dp"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
-                    android:background="@drawable/border"
                     android:layout_marginRight="16dp"
-                    android:textColor="@color/black"
-                    android:text="Force Test" />
+                    android:background="@drawable/border"
+                    android:text="Force Test"
+                    android:textColor="@color/black" />
 
             </RelativeLayout>
 
             <RelativeLayout
                 android:id="@+id/row1"
                 android:layout_width="match_parent"
-                android:layout_height="45dp"
-                android:layout_marginLeft="16dp"
+                android:layout_height="wrap_content"
                 android:layout_below="@+id/row"
+                android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
                 android:layout_marginTop="5dp"
                 android:orientation="horizontal">
@@ -57,19 +57,26 @@
                     android:id="@+id/Equipment1"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
+                    android:layout_centerVertical="true"
                     android:gravity="center"
                     android:text="Cooling Stage 1"
                     android:textColor="@color/black"
                     android:textSize="18sp" />
 
-                <Button
+                <!--<Button-->
+                <!--android:id="@+id/coolingStage1"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="40dp"-->
+                <!--android:layout_alignParentRight="true"-->
+                <!--android:layout_centerVertical="true"-->
+                <!--android:background="@drawable/border"-->
+                <!--android:text="OFF" />-->
+                <ToggleButton
                     android:id="@+id/coolingStage1"
                     android:layout_width="wrap_content"
-                    android:layout_height="40dp"
+                    android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"
-                    android:background="@drawable/border"
-                    android:text="OFF" />
+                    android:layout_centerVertical="true" />
 
                 <View
                     android:layout_width="match_parent"
@@ -82,7 +89,7 @@
             <RelativeLayout
                 android:id="@+id/row2"
                 android:layout_width="match_parent"
-                android:layout_height="45dp"
+                android:layout_height="wrap_content"
                 android:layout_below="@+id/row1"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
@@ -93,19 +100,19 @@
                     android:id="@+id/Equipment2"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
+                    android:layout_centerVertical="true"
                     android:gravity="center"
                     android:text="Cooling Stage 2"
                     android:textColor="@color/black"
                     android:textSize="18sp" />
 
-                <Button
+
+                <ToggleButton
                     android:id="@+id/coolingStage2"
                     android:layout_width="wrap_content"
-                    android:layout_height="40dp"
+                    android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"
-                    android:background="@drawable/border"
-                    android:text="OFF" />
+                    android:layout_centerVertical="true" />
 
                 <View
                     android:layout_width="match_parent"
@@ -118,7 +125,7 @@
             <RelativeLayout
                 android:id="@+id/row3"
                 android:layout_width="match_parent"
-                android:layout_height="45dp"
+                android:layout_height="wrap_content"
                 android:layout_below="@+id/row2"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
@@ -129,19 +136,18 @@
                     android:id="@+id/Equipment3"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
+                    android:layout_centerVertical="true"
                     android:gravity="center"
                     android:text="Fan Stage 1"
                     android:textColor="@color/black"
                     android:textSize="18sp" />
 
-                <Button
+                <ToggleButton
                     android:id="@+id/fanStage1"
                     android:layout_width="wrap_content"
-                    android:layout_height="40dp"
+                    android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"
-                    android:background="@drawable/border"
-                    android:text="OFF" />
+                    android:layout_centerVertical="true" />
 
                 <View
                     android:layout_width="match_parent"
@@ -154,7 +160,7 @@
             <RelativeLayout
                 android:id="@+id/row4"
                 android:layout_width="match_parent"
-                android:layout_height="45dp"
+                android:layout_height="wrap_content"
                 android:layout_below="@+id/row3"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
@@ -165,19 +171,18 @@
                     android:id="@+id/Equipment4"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
+                    android:layout_centerVertical="true"
                     android:gravity="center"
                     android:text="Fan Stage 2"
                     android:textColor="@color/black"
                     android:textSize="18sp" />
 
-                <Button
+                <ToggleButton
                     android:id="@+id/fanStage2"
                     android:layout_width="wrap_content"
-                    android:layout_height="40dp"
+                    android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"
-                    android:background="@drawable/border"
-                    android:text="OFF" />
+                    android:layout_centerVertical="true" />
 
                 <View
                     android:layout_width="match_parent"
@@ -190,7 +195,7 @@
             <RelativeLayout
                 android:id="@+id/row5"
                 android:layout_width="match_parent"
-                android:layout_height="45dp"
+                android:layout_height="wrap_content"
                 android:layout_below="@+id/row4"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
@@ -201,19 +206,18 @@
                     android:id="@+id/Equipment5"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
+                    android:layout_centerVertical="true"
                     android:gravity="center"
                     android:text="Heating Stage 1"
                     android:textColor="@color/black"
                     android:textSize="18sp" />
 
-                <Button
+                <ToggleButton
                     android:id="@+id/heatingStage1"
                     android:layout_width="wrap_content"
-                    android:layout_height="40dp"
+                    android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"
-                    android:background="@drawable/border"
-                    android:text="OFF" />
+                    android:layout_centerVertical="true" />
 
                 <View
                     android:layout_width="match_parent"
@@ -227,7 +231,7 @@
             <RelativeLayout
                 android:id="@+id/row6"
                 android:layout_width="match_parent"
-                android:layout_height="45dp"
+                android:layout_height="wrap_content"
                 android:layout_below="@+id/row5"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
@@ -238,19 +242,18 @@
                     android:id="@+id/Equipment6"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
+                    android:layout_centerVertical="true"
                     android:gravity="center"
                     android:text="Heating Stage 2"
                     android:textColor="@color/black"
                     android:textSize="18sp" />
 
-                <Button
+                <ToggleButton
                     android:id="@+id/heatingStage2"
                     android:layout_width="wrap_content"
-                    android:layout_height="40dp"
+                    android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"
-                    android:background="@drawable/border"
-                    android:text="OFF" />
+                    android:layout_centerVertical="true" />
 
                 <View
                     android:layout_width="match_parent"
@@ -263,7 +266,7 @@
             <RelativeLayout
                 android:id="@+id/row7"
                 android:layout_width="match_parent"
-                android:layout_height="45dp"
+                android:layout_height="wrap_content"
                 android:layout_below="@+id/row6"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
@@ -274,19 +277,18 @@
                     android:id="@+id/Equipment7"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
+                    android:layout_centerVertical="true"
                     android:gravity="center"
                     android:text="Humidifier"
                     android:textColor="@color/black"
                     android:textSize="18sp" />
 
-                <Button
+                <ToggleButton
                     android:id="@+id/humidifier"
                     android:layout_width="wrap_content"
-                    android:layout_height="40dp"
+                    android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"
-                    android:background="@drawable/border"
-                    android:text="OFF" />
+                    android:layout_centerVertical="true" />
 
                 <View
                     android:layout_width="match_parent"
@@ -316,21 +318,20 @@
                     android:textSize="18sp" />
 
                 <!--<com.x75f.installer.Utils.Number_Picker-->
-                    <!--android:id="@+id/analog1"-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="40dp"-->
-                    <!--android:focusable="false"-->
-                    <!--android:descendantFocusability="blocksDescendants"-->
-                    <!--android:showDividers="middle"-->
-                    <!--android:focusableInTouchMode="false"-->
-                    <!--android:layout_alignParentRight="true"-->
-                    <!--android:layout_centerVertical="true"-->
-                     <!--/>-->
+                <!--android:id="@+id/analog1"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="40dp"-->
+                <!--android:focusable="false"-->
+                <!--android:descendantFocusability="blocksDescendants"-->
+                <!--android:showDividers="middle"-->
+                <!--android:focusableInTouchMode="false"-->
+                <!--android:layout_alignParentRight="true"-->
+                <!--android:layout_centerVertical="true"-->
+                <!--/>-->
                 <Spinner
-                    android:layout_width="60dp"
-                    android:layout_height="40dp"
                     android:id="@+id/analog1"
-                    android:background="@drawable/border"
+                    android:layout_width="70dp"
+                    android:layout_height="40dp"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"></Spinner>
 
@@ -341,6 +342,7 @@
                     android:layout_marginTop="2dp"
                     android:background="@color/light_gray" />
             </RelativeLayout>
+
             <RelativeLayout
                 android:id="@+id/row9"
                 android:layout_width="match_parent"
@@ -361,13 +363,12 @@
                     android:textSize="18sp" />
 
                 <Spinner
-                    android:layout_width="60dp"
-                    android:layout_height="40dp"
                     android:id="@+id/analog2"
-                    android:background="@drawable/border"
+                    android:layout_width="70dp"
+                    android:layout_height="40dp"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"></Spinner>
-                     />
+                />
 
                 <View
                     android:layout_width="match_parent"
@@ -376,6 +377,7 @@
                     android:layout_marginTop="2dp"
                     android:background="@color/light_gray" />
             </RelativeLayout>
+
             <RelativeLayout
                 android:id="@+id/row10"
                 android:layout_width="match_parent"
@@ -396,13 +398,12 @@
                     android:textSize="18sp" />
 
                 <Spinner
-                    android:layout_width="60dp"
-                    android:layout_height="40dp"
                     android:id="@+id/analog3"
-                    android:background="@drawable/border"
+                    android:layout_width="70dp"
+                    android:layout_height="40dp"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"></Spinner>
-                     />
+                />
 
                 <View
                     android:layout_width="match_parent"
@@ -411,6 +412,7 @@
                     android:layout_marginTop="2dp"
                     android:background="@color/light_gray" />
             </RelativeLayout>
+
             <RelativeLayout
                 android:id="@+id/row11"
                 android:layout_width="match_parent"
@@ -431,13 +433,12 @@
                     android:textSize="18sp" />
 
                 <Spinner
-                    android:layout_width="60dp"
-                    android:layout_height="40dp"
                     android:id="@+id/analog4"
-                    android:background="@drawable/border"
+                    android:layout_width="70dp"
+                    android:layout_height="40dp"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"></Spinner>
-                     />
+                />
 
                 <View
                     android:layout_width="match_parent"
