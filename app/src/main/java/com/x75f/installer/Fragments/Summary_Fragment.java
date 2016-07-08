@@ -20,6 +20,7 @@ import com.kinvey.android.callback.KinveyListCallback;
 import com.kinvey.java.Logger;
 import com.kinvey.java.Query;
 import com.x75f.installer.Activity.CCU_Details;
+import com.x75f.installer.Activity.Installer;
 import com.x75f.installer.Adapters.Zones_Adapter;
 import com.x75f.installer.R;
 import com.x75f.installer.Utils.Generic_Methods;
@@ -327,93 +328,96 @@ public class Summary_Fragment extends Fragment {
         @Override
         protected void onPostExecute(Summary_Data sd) {
             Log.d("done", "dataloaded");
+            try {
+                timezone.setText(sd.getDate_time());
+                timezone1.setText(sd.getDate_time());
+                ccuName.setText(sd.getCcu_name());
+                Building_limit.setText(sd.getBuilding_no_cooler() + "/" + sd.getBuilding_no_hotter());
+                user_limit.setText(sd.getUser_no_cooler() + "/" + sd.getUser_no_hotter());
+                current_temp.setText(sd.getCm_cur_temp() + "");
+                current_humidity.setText(sd.getCm_cur_humidity() + "");
+                if ((sd.getCooling_stage_1() == 0 || sd.getCooling_stage_1() == 1) && (sd.getCooling_stage_2() == 0 || sd.getCooling_stage_2() == 1)) {
+                    hvac_equipment_detail.setText("Cooling Stage 1(" + cooling_stage1 + ") and 2(" + cooling_stage2 + ")");
+                } else if ((sd.getCooling_stage_1() == -1) && (sd.getCooling_stage_2() == 0 || sd.getCooling_stage_2() == 1)) {
+                    hvac_equipment_detail.setText("Cooling Stage 2(" + cooling_stage2 + ")");
+                } else if ((sd.getCooling_stage_2() == -1) && (sd.getCooling_stage_1() == 0 || sd.getCooling_stage_1() == 1)) {
+                    hvac_equipment_detail.setText("Cooling Stage 1(" + cooling_stage1 + ")");
+                } else if (sd.getCooling_stage_1() == -1 && sd.getCooling_stage_2() == -1) {
+                    hvac_equipment_detail.setVisibility(View.GONE);
+                }
 
-            timezone.setText(sd.getDate_time());
-            timezone1.setText(sd.getDate_time());
-            ccuName.setText(sd.getCcu_name());
-            Building_limit.setText(sd.getBuilding_no_cooler() + "/" + sd.getBuilding_no_hotter());
-            user_limit.setText(sd.getUser_no_cooler() + "/" + sd.getUser_no_hotter());
-            current_temp.setText(sd.getCm_cur_temp() + "");
-            current_humidity.setText(sd.getCm_cur_humidity() + "");
-            if ((sd.getCooling_stage_1() == 0 || sd.getCooling_stage_1() == 1) && (sd.getCooling_stage_2() == 0 || sd.getCooling_stage_2() == 1)) {
-                hvac_equipment_detail.setText("Cooling Stage 1(" + cooling_stage1 + ") and 2(" + cooling_stage2 + ")");
-            } else if ((sd.getCooling_stage_1() == -1) && (sd.getCooling_stage_2() == 0 || sd.getCooling_stage_2() == 1)) {
-                hvac_equipment_detail.setText("Cooling Stage 2(" + cooling_stage2 + ")");
-            } else if ((sd.getCooling_stage_2() == -1) && (sd.getCooling_stage_1() == 0 || sd.getCooling_stage_1() == 1)) {
-                hvac_equipment_detail.setText("Cooling Stage 1(" + cooling_stage1 + ")");
-            } else if (sd.getCooling_stage_1() == -1 && sd.getCooling_stage_2() == -1) {
-                hvac_equipment_detail.setVisibility(View.GONE);
+                if ((sd.getHeating_stage_1() == 0 || sd.getHeating_stage_1() == 1) && (sd.getHeating_stage_2() == 0 || sd.getHeating_stage_2() == 1)) {
+                    hvac_equipment_detail1.setText("Heating Stage 1(" + heating_stage1 + ") and 2(" + heating_stage2 + ")");
+                } else if ((sd.getHeating_stage_1() == -1) && (sd.getHeating_stage_2() == 0 || sd.getHeating_stage_2() == 1)) {
+                    hvac_equipment_detail1.setText("Heating Stage 2(" + heating_stage2 + ")");
+                } else if ((sd.getHeating_stage_2() == -1) && (sd.getHeating_stage_1() == 0 || sd.getHeating_stage_1() == 1)) {
+                    hvac_equipment_detail1.setText("Heating Stage 1(" + heating_stage1 + ")");
+                } else if (sd.getHeating_stage_1() == -1 && sd.getHeating_stage_2() == -1) {
+                    hvac_equipment_detail1.setVisibility(View.GONE);
+                }
+
+                if ((sd.getFan_stage_1() == 0 || sd.getFan_stage_1() == 1) && (sd.getFan_stage_2() == 0 || sd.getFan_stage_2() == 1)) {
+                    hvac_equipment_detail2.setText("Fan Stage 1(" + fan_stage1 + ") and 2(" + fan_stage2 + ")");
+                } else if ((sd.getFan_stage_1() == -1) && (sd.getFan_stage_2() == 0 || sd.getFan_stage_2() == 1)) {
+                    hvac_equipment_detail2.setText("Fan Stage 2(" + fan_stage2 + ")");
+                } else if ((sd.getFan_stage_2() == -1) && (sd.getFan_stage_1() == 0 || sd.getFan_stage_1() == 1)) {
+                    hvac_equipment_detail2.setText("Fan Stage 1(" + fan_stage1 + ")");
+                } else if (sd.getFan_stage_1() == -1 && sd.getFan_stage_2() == -1) {
+                    hvac_equipment_detail2.setVisibility(View.GONE);
+                }
+
+                if (sd.getHumidifier() == -1) {
+                    hvac_equipment_detail3.setVisibility(View.GONE);
+                } else {
+                    hvac_equipment_detail3.setText("Humidifier(" + humidifier + ")");
+                }
+
+                if (sd.isEconomizerAvailable() == true && sd.isPaired() == true) {
+                    hvac_equipment_detail4.setText("Economizer(Yes/Yes)");
+                } else if (sd.isEconomizerAvailable() == true && sd.isPaired() == false) {
+                    hvac_equipment_detail4.setText("Economizer(Yes/No)");
+                } else {
+                    hvac_equipment_detail4.setText("Economizer(No/No)");
+                }
+                hvac_equipment_detail5.setText("Analog(" + sd.getAnalog1_damperPos() + "/" + sd.getAnalog2_damperPos() + "/" + sd.getAnalog3_damperPos() + "/" + sd.getAnalog4_damperPos() + ")");
+
+                economiser_detail.setText("Enthalpy(In:" + String.format("%.1f", sd.getmInsideAirEnthalpy()) + ")/(Out:" + String.format("%.1f", sd.getmOutsideAirEnthalpy()) + ")");
+                economiser_detail1.setText("Outside Temp:" + sd.getmOutsideAirTemperature() + "(" + sd.getmOutsideAirMinTemp() + "-" + sd.getmOutsideAirMaxTemp() + ")");
+                economiser_detail2.setText("Outside Humidity:" + sd.getmOutsideAirHumidity() + "(" + sd.getmOutsideAirMinHumidity() + "-" + sd.getmOutsideAirMaxHumidity() + ")");
+                economiser_detail3.setText("Damper Pos:" + sd.getmDamperPos());
+                economiser_detail4.setText("MAT:" + sd.getmMixedAirTemperature() + "/RAT:" + sd.getmReturnAirTemperature());
+                if (sd.isPaired()) {
+
+                    economiser_detail5.setText("CO2:" + sd.getmCO2Level() + "(" + sd.getmCO2LevelThreshold() + ")");
+                    economiser_detail6.setText("CO:" + sd.getmCOLevel() + "(" + sd.getmCOLevelThreshold() + ")");
+                    economiser_detail7.setText("NO2:" + sd.getmNO2Level() + "(" + sd.getmNO2LevelThreshold() + ")");
+
+                } else {
+                    economiser_detail.setText("Not Paired");
+                    economiser_detail1.setVisibility(View.GONE);
+                    economiser_detail2.setVisibility(View.GONE);
+                    economiser_detail3.setVisibility(View.GONE);
+                    economiser_detail4.setVisibility(View.GONE);
+                    economiser_detail5.setVisibility(View.GONE);
+                    economiser_detail6.setVisibility(View.GONE);
+                    economiser_detail7.setVisibility(View.GONE);
+                }
+                scrollView.smoothScrollTo(0, 0);
+                if (zoneDatas.size() != 0) {
+                    Zones_Adapter zones_adapter = new Zones_Adapter(CCU_Details.getSingletonContext(), zoneDatas);
+                    ZoneList.setAdapter(zones_adapter);
+                    Helper.getListViewSize(ZoneList);
+                }
+                if (sd.isPressureSensorPaired()) {
+                    pressure_sensor.setText(String.format("%.2f", sd.getmPressureLevel()) + "(" + String.format("%.2f", sd.getmPressureLevelThreshold()) + ")");
+                } else {
+                    pressure_sensor.setText("NA");
+                }
+                dismissDialog();
+
+            } catch (NullPointerException e) {
+                e.printStackTrace();
             }
-
-            if ((sd.getHeating_stage_1() == 0 || sd.getHeating_stage_1() == 1) && (sd.getHeating_stage_2() == 0 || sd.getHeating_stage_2() == 1)) {
-                hvac_equipment_detail1.setText("Heating Stage 1(" + heating_stage1 + ") and 2(" + heating_stage2 + ")");
-            } else if ((sd.getHeating_stage_1() == -1) && (sd.getHeating_stage_2() == 0 || sd.getHeating_stage_2() == 1)) {
-                hvac_equipment_detail1.setText("Heating Stage 2(" + heating_stage2 + ")");
-            } else if ((sd.getHeating_stage_2() == -1) && (sd.getHeating_stage_1() == 0 || sd.getHeating_stage_1() == 1)) {
-                hvac_equipment_detail1.setText("Heating Stage 1(" + heating_stage1 + ")");
-            } else if (sd.getHeating_stage_1() == -1 && sd.getHeating_stage_2() == -1) {
-                hvac_equipment_detail1.setVisibility(View.GONE);
-            }
-
-            if ((sd.getFan_stage_1() == 0 || sd.getFan_stage_1() == 1) && (sd.getFan_stage_2() == 0 || sd.getFan_stage_2() == 1)) {
-                hvac_equipment_detail2.setText("Fan Stage 1(" + fan_stage1 + ") and 2(" + fan_stage2 + ")");
-            } else if ((sd.getFan_stage_1() == -1) && (sd.getFan_stage_2() == 0 || sd.getFan_stage_2() == 1)) {
-                hvac_equipment_detail2.setText("Fan Stage 2(" + fan_stage2 + ")");
-            } else if ((sd.getFan_stage_2() == -1) && (sd.getFan_stage_1() == 0 || sd.getFan_stage_1() == 1)) {
-                hvac_equipment_detail2.setText("Fan Stage 1(" + fan_stage1 + ")");
-            } else if (sd.getFan_stage_1() == -1 && sd.getFan_stage_2() == -1) {
-                hvac_equipment_detail2.setVisibility(View.GONE);
-            }
-
-            if (sd.getHumidifier() == -1) {
-                hvac_equipment_detail3.setVisibility(View.GONE);
-            } else {
-                hvac_equipment_detail3.setText("Humidifier(" + humidifier + ")");
-            }
-
-            if (sd.isEconomizerAvailable() == true && sd.isPaired() == true) {
-                hvac_equipment_detail4.setText("Economizer(Yes/Yes)");
-            } else if (sd.isEconomizerAvailable() == true && sd.isPaired() == false) {
-                hvac_equipment_detail4.setText("Economizer(Yes/No)");
-            } else {
-                hvac_equipment_detail4.setText("Economizer(No/No)");
-            }
-            hvac_equipment_detail5.setText("Analog(" + sd.getAnalog1_damperPos() + "/" + sd.getAnalog2_damperPos() + "/" + sd.getAnalog3_damperPos() + "/" + sd.getAnalog4_damperPos() + ")");
-
-            economiser_detail.setText("Enthalpy(In:" + String.format("%.1f", sd.getmInsideAirEnthalpy()) + ")/(Out:" + String.format("%.1f", sd.getmOutsideAirEnthalpy()) + ")");
-            economiser_detail1.setText("Outside Temp:" + sd.getmOutsideAirTemperature() + "(" + sd.getmOutsideAirMinTemp() + "-" + sd.getmOutsideAirMaxTemp() + ")");
-            economiser_detail2.setText("Outside Humidity:" + sd.getmOutsideAirHumidity() + "(" + sd.getmOutsideAirMinHumidity() + "-" + sd.getmOutsideAirMaxHumidity() + ")");
-            economiser_detail3.setText("Damper Pos:" + sd.getmDamperPos());
-            economiser_detail4.setText("MAT:" + sd.getmMixedAirTemperature() + "/RAT:" + sd.getmReturnAirTemperature());
-            if (sd.isPaired()) {
-
-                economiser_detail5.setText("CO2:" + sd.getmCO2Level() + "(" + sd.getmCO2LevelThreshold() + ")");
-                economiser_detail6.setText("CO:" + sd.getmCOLevel() + "(" + sd.getmCOLevelThreshold() + ")");
-                economiser_detail7.setText("NO2:" + sd.getmNO2Level() + "(" + sd.getmNO2LevelThreshold() + ")");
-
-            } else {
-                economiser_detail.setText("Not Paired");
-                economiser_detail1.setVisibility(View.GONE);
-                economiser_detail2.setVisibility(View.GONE);
-                economiser_detail3.setVisibility(View.GONE);
-                economiser_detail4.setVisibility(View.GONE);
-                economiser_detail5.setVisibility(View.GONE);
-                economiser_detail6.setVisibility(View.GONE);
-                economiser_detail7.setVisibility(View.GONE);
-            }
-            scrollView.smoothScrollTo(0, 0);
-            if (zoneDatas.size() != 0) {
-                Zones_Adapter zones_adapter = new Zones_Adapter(CCU_Details.getSingletonContext(), zoneDatas);
-                ZoneList.setAdapter(zones_adapter);
-                Helper.getListViewSize(ZoneList);
-            }
-            if (sd.isPressureSensorPaired()) {
-                pressure_sensor.setText(String.format("%.2f", sd.getmPressureLevel()) + "(" + String.format("%.2f", sd.getmPressureLevelThreshold()) + ")");
-            } else {
-                pressure_sensor.setText("NA");
-            }
-            dismissDialog();
-
         }
     }
 
@@ -431,15 +435,16 @@ public class Summary_Fragment extends Fragment {
     }
 
     public void GetData() {
-        if (Pleasewait == null) {
-            Pleasewait = ProgressDialog.show(CCU_Details.getSingletonContext(), "", "Please Wait...");
-        }
+        if (Generic_Methods.getKinveyClient().user().isUserLoggedIn()) {
+            if (Pleasewait == null) {
+                Pleasewait = ProgressDialog.show(CCU_Details.getSingletonContext(), "", "Please Wait...");
+            }
 
-        Query newquery = new Query();
-        newquery.equals("_id", getArguments().getString("ccu_id"));
-        AsyncAppData<GenericJson> summary = Generic_Methods.getKinveyClient().appData("00CCUSummary", GenericJson.class);
-        Log.e("getdata", "jhbacs");
-        if (summary.isOnline()) {
+            Query newquery = new Query();
+            newquery.equals("_id", getArguments().getString("ccu_id"));
+            AsyncAppData<GenericJson> summary = Generic_Methods.getKinveyClient().appData("00CCUSummary", GenericJson.class);
+            Log.e("getdata", "jhbacs");
+
             Log.e("getdata1", "jhbacs1");
             summary.get(newquery, new KinveyListCallback<GenericJson>() {
 
@@ -458,6 +463,9 @@ public class Summary_Fragment extends Fragment {
                     dismissDialog();
                 }
             });
+
+        } else {
+            Generic_Methods.ping();
         }
 
     }
@@ -481,7 +489,9 @@ public class Summary_Fragment extends Fragment {
         super.onResume();
         Log.e("onresume", "onresume");
         if (CCU_Details.getSingletonContext() != null && CCU_Details.getSingletonContext().viewPager.getCurrentItem() == 0) {
-
+//            if (Generic_Methods.otpLists != null){
+//                Generic_Methods.getToast(CCU_Details.getSingletonContext(),Generic_Methods.otpLists.size()+"");
+//            }
             CCU_Details.getSingletonContext().summaryHandler = new Handler();
 
             dismissDialog();

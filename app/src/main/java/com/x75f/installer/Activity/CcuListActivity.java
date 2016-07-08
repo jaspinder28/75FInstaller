@@ -20,9 +20,10 @@ import android.widget.ListView;
 import android.widget.SearchView;
 
 import com.x75f.installer.Adapters.CcuListAdapter;
-import com.x75f.installer.DB_Local.SQLliteAdapter;
+
 import com.x75f.installer.R;
 import com.x75f.installer.Utils.Generic_Methods;
+import com.x75f.installer.Utils.Otp_List;
 import com.x75f.installer.Utils.UsersData;
 
 import java.util.ArrayList;
@@ -40,11 +41,11 @@ public class CcuListActivity extends AppCompatActivity implements SearchView.OnQ
     @InjectView(R.id.tool_bar)
     Toolbar tool_bar;
     ArrayList<String> search;
-    private static Context _singleton;
-    private SQLliteAdapter sqLlite;
+    private static CcuListActivity _singleton;
+//    private SQLliteAdapter sqLlite;
     Filter filter;
 
-    public static Context getSingletonContext() {
+    public static CcuListActivity getSingletonContext() {
         return _singleton;
     }
 
@@ -55,7 +56,7 @@ public class CcuListActivity extends AppCompatActivity implements SearchView.OnQ
         ButterKnife.inject(this);
         _singleton = this;
         //database to store otp verification status
-        sqLlite = new SQLliteAdapter(CcuListActivity.getSingletonContext());
+//        sqLlite = new SQLliteAdapter(CcuListActivity.getSingletonContext());
 
         tool_bar.setTitle("Welcome " + getIntent().getStringExtra("email"));
         setSupportActionBar(tool_bar);
@@ -69,6 +70,9 @@ public class CcuListActivity extends AppCompatActivity implements SearchView.OnQ
                         1);
             }
         }
+//        if (Generic_Methods.otpLists != null){
+//            Generic_Methods.getToast(CcuListActivity.getSingletonContext(),Generic_Methods.otpLists.size()+"");
+//        }
 
         users = new ArrayList<>();
         users = (ArrayList<UsersData>) getIntent().getSerializableExtra("ccudata");
@@ -92,9 +96,19 @@ public class CcuListActivity extends AppCompatActivity implements SearchView.OnQ
         }
         for (int i = 0; i < users.size(); i++) {
             search.add(users.get(i).getCcuName());
-            sqLlite.insertdata(users.get(i).getUsername(), 0);
+//            sqLlite.insertdata(users.get(i).getUsername(), 0);
         }
-
+        if (Generic_Methods.otpLists != null) {
+            if (Generic_Methods.otpLists.isEmpty()) {
+                for (int i = 0; i < users.size(); i++) {
+                    if (Generic_Methods.otpLists != null) {
+                        Generic_Methods.otpLists.add(new Otp_List(users.get(i).getUsername(),0,""));
+                    } else {
+                        Generic_Methods.otpLists = new ArrayList<>();
+                    }
+                }
+            }
+        }
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(CcuListActivity.this, android.R.layout.simple_list_item_1, android.R.id.text1, search);
         filter = adapter.getFilter();
@@ -128,13 +142,14 @@ public class CcuListActivity extends AppCompatActivity implements SearchView.OnQ
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.logout:
-                Thread h = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        sqLlite.updateEntire();
-                    }
-                });
-                h.run();
+//                Thread h = new Thread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        sqLlite.updateEntire();
+//                    }
+//                });
+//                h.run();
+                Generic_Methods.otpLists.clear();
                 SharedPreferences prefs = CcuListActivity.this.getSharedPreferences("login", Context.MODE_PRIVATE);
                 prefs.edit().clear().apply();
                 Intent i1 = new Intent(CcuListActivity.this, MainActivity.class);

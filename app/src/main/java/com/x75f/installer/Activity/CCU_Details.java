@@ -30,7 +30,7 @@ import com.google.api.client.json.GenericJson;
 import com.kinvey.android.AsyncAppData;
 import com.kinvey.android.callback.KinveyListCallback;
 import com.kinvey.java.Query;
-import com.x75f.installer.DB_Local.SQLliteAdapter;
+
 import com.x75f.installer.Fragments.DamperTestFragment;
 import com.x75f.installer.Fragments.DataLogFragment;
 import com.x75f.installer.Fragments.NotesFragment;
@@ -47,14 +47,14 @@ public class CCU_Details extends AppCompatActivity implements View.OnClickListen
     public ViewPager viewPager;
     String ccuname;
     String ccuid;
-    public  Button bSummary;
-    public  Toolbar tool_bar;
-    public  Button bDatalog;
-    public  Button bSystem;
-    public  Button bDamper;
-    public  Button bNotes;
-    public  int currentPage;
-    public SQLliteAdapter sqLliteAdapter;
+    public Button bSummary;
+    public Toolbar tool_bar;
+    public Button bDatalog;
+    public Button bSystem;
+    public Button bDamper;
+    public Button bNotes;
+    public int currentPage;
+//    public SQLliteAdapter sqLliteAdapter;
     public Handler summaryHandler;
     public Runnable summaryUpdate;
     public Handler datalogHandler;
@@ -64,7 +64,7 @@ public class CCU_Details extends AppCompatActivity implements View.OnClickListen
     public Handler damperTestHandler;
     public Runnable damperTestUpdate;
 
-//    public RTApi notesApi;
+    //    public RTApi notesApi;
 //    public RTManager NotesManager;
     public static CCU_Details _singleton;
 
@@ -133,7 +133,7 @@ public class CCU_Details extends AppCompatActivity implements View.OnClickListen
 
     public void OnResumeFn() {
         _singleton = this;
-        sqLliteAdapter = new SQLliteAdapter(CCU_Details.this);
+//        sqLliteAdapter = new SQLliteAdapter(CCU_Details.this);
         viewPager.setOffscreenPageLimit(5);
         viewPager.setAdapter(new MyPagerAdapter(getSupportFragmentManager()));
         bSummary.setOnClickListener(this);
@@ -250,13 +250,14 @@ public class CCU_Details extends AppCompatActivity implements View.OnClickListen
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.logout:
-                Thread h = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        sqLliteAdapter.updateEntire();
-                    }
-                });
-                h.run();
+//                Thread h = new Thread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        sqLliteAdapter.updateEntire();
+//                    }
+//                });
+//                h.run();
+                Generic_Methods.otpLists.clear();
                 SharedPreferences prefs = CCU_Details.this.getSharedPreferences("login", Context.MODE_PRIVATE);
                 prefs.edit().clear().apply();
                 Intent i1 = new Intent(CCU_Details.this, MainActivity.class);
@@ -334,83 +335,92 @@ public class CCU_Details extends AppCompatActivity implements View.OnClickListen
         if (Generic_Methods.isNetworkAvailable(CCU_Details.getSingletonContext())) {
             Log.e("clicked", "test");
             AsyncAppData<GenericJson> summary = Generic_Methods.getKinveyClient().appData("00CCUOneTimePassword", GenericJson.class);
-
-            summary.get(newquery, new KinveyListCallback<GenericJson>() {
-                @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
-                @Override
-                public void onSuccess(GenericJson[] genericJsons) {
+            if (Generic_Methods.getKinveyClient().user().isUserLoggedIn()) {
+                summary.get(newquery, new KinveyListCallback<GenericJson>() {
+                    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
+                    @Override
+                    public void onSuccess(GenericJson[] genericJsons) {
 //                    dismissDialog();
-                    try {
-                        if (genericJsons.length == 0) {
+                        try {
+                            if (genericJsons.length == 0) {
 
-                            Log.e("clicked", "done");
+                                Log.e("clicked", "done");
+                                Otp_Verification otp_verification = new Otp_Verification(CCU_Details.getSingletonContext(), ccuid, x);
+                                otp_verification.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                                otp_verification.show();
+//                                sqLliteAdapter.update(ccuid, 0);
+                                Generic_Methods.updateOtpListRow(ccuid,0,"");
+                            } else if (genericJsons.length == 1) {
+
+                                try {
+                                    JSONObject s = new JSONObject(genericJsons[0].toString());
+//                                Generic_Methods.getToast(CCU_Details.getSingletonContext(), s.getString("oneTimePassword") + sqLliteAdapter.getdata(ccuid));
+//                                    if (s.getString("oneTimePassword") != null && sqLliteAdapter.getdata(ccuid) == 1) {
+                                    if (s.getString("oneTimePassword") != null && Generic_Methods.getDataFromOtpBasedOnCcuId(ccuid).checked == 1) {
+                                        viewPager.setCurrentItem(x, false);
+                                        if (x == 2) {
+                                            bSummary.setTextColor(getResources().getColor(R.color.gray));
+                                            bSummary.setCompoundDrawablesRelativeWithIntrinsicBounds(null, getResources().getDrawable(R.mipmap.summary), null, null);
+                                            bDatalog.setTextColor(getResources().getColor(R.color.gray));
+                                            bDatalog.setCompoundDrawablesRelativeWithIntrinsicBounds(null, getResources().getDrawable(R.mipmap.datalog), null, null);
+                                            bSystem.setTextColor(getResources().getColor(R.color.primary));
+                                            bSystem.setCompoundDrawablesRelativeWithIntrinsicBounds(null, getResources().getDrawable(R.mipmap.systemtestc), null, null);
+                                            bDamper.setTextColor(getResources().getColor(R.color.gray));
+                                            bDamper.setCompoundDrawablesRelativeWithIntrinsicBounds(null, getResources().getDrawable(R.mipmap.damper), null, null);
+                                            bNotes.setTextColor(getResources().getColor(R.color.gray));
+                                            bNotes.setCompoundDrawablesRelativeWithIntrinsicBounds(null, getResources().getDrawable(R.mipmap.notes), null, null);
+                                        } else {
+                                            bSummary.setTextColor(getResources().getColor(R.color.gray));
+                                            bSummary.setCompoundDrawablesRelativeWithIntrinsicBounds(null, getResources().getDrawable(R.mipmap.summary), null, null);
+                                            bDatalog.setTextColor(getResources().getColor(R.color.gray));
+                                            bDatalog.setCompoundDrawablesRelativeWithIntrinsicBounds(null, getResources().getDrawable(R.mipmap.datalog), null, null);
+                                            bSystem.setTextColor(getResources().getColor(R.color.gray));
+                                            bSystem.setCompoundDrawablesRelativeWithIntrinsicBounds(null, getResources().getDrawable(R.mipmap.systemtest), null, null);
+                                            bDamper.setTextColor(getResources().getColor(R.color.primary));
+                                            bDamper.setCompoundDrawablesRelativeWithIntrinsicBounds(null, getResources().getDrawable(R.mipmap.damperc), null, null);
+                                            bNotes.setTextColor(getResources().getColor(R.color.gray));
+                                            bNotes.setCompoundDrawablesRelativeWithIntrinsicBounds(null, getResources().getDrawable(R.mipmap.notes), null, null);
+                                        }
+                                    } else {
+//                                        sqLliteAdapter.update(ccuid, 0);
+                                        Generic_Methods.updateOtpListRow(ccuid,0,"");
+                                        Otp_Verification otp_verification = new Otp_Verification(CCU_Details.getSingletonContext(), ccuid, x);
+                                        otp_verification.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                                        otp_verification.show();
+                                    }
+
+                                } catch (Exception e) {
+//                                    sqLliteAdapter.update(ccuid, 0);
+                                    Generic_Methods.updateOtpListRow(ccuid,0,"");
+                                }
+                            }
+
+                        } catch (Exception e) {
+                            Generic_Methods.getToast(CCU_Details.getSingletonContext(), e.getMessage());
                             Otp_Verification otp_verification = new Otp_Verification(CCU_Details.getSingletonContext(), ccuid, x);
                             otp_verification.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                             otp_verification.show();
-                            sqLliteAdapter.update(ccuid, 0);
-                        } else if (genericJsons.length == 1) {
-
-                            try {
-                                JSONObject s = new JSONObject(genericJsons[0].toString());
-//                                Generic_Methods.getToast(CCU_Details.getSingletonContext(), s.getString("oneTimePassword") + sqLliteAdapter.getdata(ccuid));
-                                if (s.getString("oneTimePassword") != null && sqLliteAdapter.getdata(ccuid) == 1) {
-                                    viewPager.setCurrentItem(x, false);
-                                    if (x == 2) {
-                                        bSummary.setTextColor(getResources().getColor(R.color.gray));
-                                        bSummary.setCompoundDrawablesRelativeWithIntrinsicBounds(null, getResources().getDrawable(R.mipmap.summary), null, null);
-                                        bDatalog.setTextColor(getResources().getColor(R.color.gray));
-                                        bDatalog.setCompoundDrawablesRelativeWithIntrinsicBounds(null, getResources().getDrawable(R.mipmap.datalog), null, null);
-                                        bSystem.setTextColor(getResources().getColor(R.color.primary));
-                                        bSystem.setCompoundDrawablesRelativeWithIntrinsicBounds(null, getResources().getDrawable(R.mipmap.systemtestc), null, null);
-                                        bDamper.setTextColor(getResources().getColor(R.color.gray));
-                                        bDamper.setCompoundDrawablesRelativeWithIntrinsicBounds(null, getResources().getDrawable(R.mipmap.damper), null, null);
-                                        bNotes.setTextColor(getResources().getColor(R.color.gray));
-                                        bNotes.setCompoundDrawablesRelativeWithIntrinsicBounds(null, getResources().getDrawable(R.mipmap.notes), null, null);
-                                    } else {
-                                        bSummary.setTextColor(getResources().getColor(R.color.gray));
-                                        bSummary.setCompoundDrawablesRelativeWithIntrinsicBounds(null, getResources().getDrawable(R.mipmap.summary), null, null);
-                                        bDatalog.setTextColor(getResources().getColor(R.color.gray));
-                                        bDatalog.setCompoundDrawablesRelativeWithIntrinsicBounds(null, getResources().getDrawable(R.mipmap.datalog), null, null);
-                                        bSystem.setTextColor(getResources().getColor(R.color.gray));
-                                        bSystem.setCompoundDrawablesRelativeWithIntrinsicBounds(null, getResources().getDrawable(R.mipmap.systemtest), null, null);
-                                        bDamper.setTextColor(getResources().getColor(R.color.primary));
-                                        bDamper.setCompoundDrawablesRelativeWithIntrinsicBounds(null, getResources().getDrawable(R.mipmap.damperc), null, null);
-                                        bNotes.setTextColor(getResources().getColor(R.color.gray));
-                                        bNotes.setCompoundDrawablesRelativeWithIntrinsicBounds(null, getResources().getDrawable(R.mipmap.notes), null, null);
-                                    }
-                                } else {
-                                    sqLliteAdapter.update(ccuid, 0);
-                                    Otp_Verification otp_verification = new Otp_Verification(CCU_Details.getSingletonContext(), ccuid, x);
-                                    otp_verification.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                                    otp_verification.show();
-                                }
-
-                            } catch (Exception e) {
-                                sqLliteAdapter.update(ccuid, 0);
-                            }
+                            Generic_Methods.updateOtpListRow(ccuid,0,"");
+//                            sqLliteAdapter.update(ccuid, 0);
+                            e.printStackTrace();
                         }
+                    }
 
-                    } catch (Exception e) {
-                        Generic_Methods.getToast(CCU_Details.getSingletonContext(), e.getMessage());
+                    @Override
+                    public void onFailure(Throwable throwable) {
+                        dismissDialog();
                         Otp_Verification otp_verification = new Otp_Verification(CCU_Details.getSingletonContext(), ccuid, x);
                         otp_verification.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                         otp_verification.show();
-                        sqLliteAdapter.update(ccuid, 0);
-                        e.printStackTrace();
+                        Generic_Methods.updateOtpListRow(ccuid,0,"");
+//                        sqLliteAdapter.update(ccuid, 0);
+
+
                     }
-                }
-
-                @Override
-                public void onFailure(Throwable throwable) {
-                    dismissDialog();
-                    Otp_Verification otp_verification = new Otp_Verification(CCU_Details.getSingletonContext(), ccuid, x);
-                    otp_verification.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                    otp_verification.show();
-                    sqLliteAdapter.update(ccuid, 0);
-
-
-                }
-            });
+                });
+            } else {
+                Generic_Methods.ping();
+            }
         } else {
             Generic_Methods.getToast(CCU_Details.getSingletonContext(), getResources().getString(R.string.user_offline));
         }
@@ -444,6 +454,7 @@ public class CCU_Details extends AppCompatActivity implements View.OnClickListen
         h.start();
 
     }
+
     public void dismissDialog() {
         if (Pleasewait != null) {
             if (Pleasewait.isShowing()) {
@@ -452,5 +463,6 @@ public class CCU_Details extends AppCompatActivity implements View.OnClickListen
             }
         }
     }
+
 }
 

@@ -16,7 +16,7 @@ import com.google.api.client.json.GenericJson;
 import com.kinvey.android.AsyncAppData;
 import com.kinvey.android.callback.KinveyListCallback;
 import com.kinvey.java.Query;
-import com.x75f.installer.DB_Local.SQLliteAdapter;
+
 import com.x75f.installer.R;
 import com.x75f.installer.Utils.Generic_Methods;
 
@@ -35,7 +35,7 @@ public class Otp_Verification extends Dialog implements View.OnClickListener {
     @InjectView(R.id.ok)
     Button ok;
     private static String ccu_id1;
-    private SQLliteAdapter sqLliteAdapter;
+//    private SQLliteAdapter sqLliteAdapter;
     private int tab;
 
 
@@ -49,7 +49,7 @@ public class Otp_Verification extends Dialog implements View.OnClickListener {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        sqLliteAdapter = new SQLliteAdapter(CCU_Details.getSingletonContext());
+//        sqLliteAdapter = new SQLliteAdapter(CCU_Details.getSingletonContext());
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.otp_dialog);
         ButterKnife.inject(this);
@@ -64,7 +64,8 @@ public class Otp_Verification extends Dialog implements View.OnClickListener {
             case (R.id.cancel):
                 if (CCU_Details.getSingletonContext().viewPager.getCurrentItem() == 2 || CCU_Details.getSingletonContext().viewPager.getCurrentItem() == 3) {
                     dismiss();
-                    sqLliteAdapter.update(ccu_id1, 0);
+//                    sqLliteAdapter.update(ccu_id1, 0);
+                    Generic_Methods.updateOtpListRow(ccu_id1,0,"");
                     CCU_Details.getSingletonContext().viewPager.setCurrentItem(0);
                     CCU_Details.getSingletonContext().bSummary.setTextColor(c.getResources().getColor(R.color.primary));
                     CCU_Details.getSingletonContext().bSummary.setCompoundDrawablesRelativeWithIntrinsicBounds(null, c.getResources().getDrawable(R.mipmap.summaryc), null, null);
@@ -79,7 +80,8 @@ public class Otp_Verification extends Dialog implements View.OnClickListener {
                 } else {
                     dismiss();
 
-                    sqLliteAdapter.update(ccu_id1, 0);
+//                    sqLliteAdapter.update(ccu_id1, 0);
+                    Generic_Methods.updateOtpListRow(ccu_id1,0,"");
                 }
                 break;
             case (R.id.ok):
@@ -126,10 +128,11 @@ public class Otp_Verification extends Dialog implements View.OnClickListener {
         try {
             JSONObject s = new JSONObject(otp1);
             if (s.getString("oneTimePassword").equalsIgnoreCase(otp.getText().toString())) {
-                Generic_Methods.createEditLastOtp(CCU_Details.getSingletonContext(), otp.getText().toString());
-                int x = sqLliteAdapter.update(ccu_id1, 1);
+//                Generic_Methods.createEditLastOtp(CCU_Details.getSingletonContext(), otp.getText().toString());
+//                int x = sqLliteAdapter.update(ccu_id1, 1);
+                Generic_Methods.updateOtpListRow(ccu_id1,1,otp.getText().toString());
 //                Generic_Methods.getToast(CCU_Details.getSingletonContext(), x + " " + ccu_id1);
-                Log.d("updaterow", x + "");
+//                Log.d("updaterow", x + "");
                 dismiss();
                 if (CCU_Details.getSingletonContext().viewPager.getCurrentItem() != 2 && CCU_Details.getSingletonContext().viewPager.getCurrentItem() != 3) {
                     CCU_Details.getSingletonContext().viewPager.setCurrentItem(tab);
@@ -161,11 +164,13 @@ public class Otp_Verification extends Dialog implements View.OnClickListener {
             } else {
                 otp.setText("");
                 Generic_Methods.getToast(CCU_Details.getSingletonContext(), c.getString(R.string.wrong_otp));
-                sqLliteAdapter.update(ccu_id1, 0);
+//                sqLliteAdapter.update(ccu_id1, 0);
+                Generic_Methods.updateOtpListRow(ccu_id1,0,"");
             }
 
         } catch (Exception e) {
-            sqLliteAdapter.update(ccu_id1, 0);
+//            sqLliteAdapter.update(ccu_id1, 0);
+            Generic_Methods.updateOtpListRow(ccu_id1,0,"");
         }
     }
 

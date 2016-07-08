@@ -153,22 +153,26 @@ public class DataLogFragment extends Fragment {
             newquery.equals("date_time", s1.optString("date_time"));
             if (Generic_Methods.isNetworkAvailable(CCU_Details.getSingletonContext())) {
                 AsyncAppData<Zone_log> summary = Generic_Methods.getKinveyClient().appData(collectionName, Zone_log.class);
-                summary.get(newquery, new KinveyListCallback<Zone_log>() {
-                    @Override
-                    public void onSuccess(final Zone_log[] zone_logs) {
+                if(Generic_Methods.getKinveyClient().user().isUserLoggedIn()) {
+                    summary.get(newquery, new KinveyListCallback<Zone_log>() {
+                        @Override
+                        public void onSuccess(final Zone_log[] zone_logs) {
 
-                        setList(zone_logs, s1.toString());
-                        dismissDialog();
-                    }
+                            setList(zone_logs, s1.toString());
+                            dismissDialog();
+                        }
 
 
-                    @Override
-                    public void onFailure(final Throwable throwable) {
-                        Log.e("fail", throwable.getMessage());
-                        dismissDialog();
-                    }
+                        @Override
+                        public void onFailure(final Throwable throwable) {
+                            Log.e("fail", throwable.getMessage());
+                            dismissDialog();
+                        }
 
-                });
+                    });
+                }else{
+                    Generic_Methods.ping();
+                }
             } else {
                 Generic_Methods.getToast(CCU_Details.getSingletonContext(), getResources().getString(R.string.user_offline));
             }

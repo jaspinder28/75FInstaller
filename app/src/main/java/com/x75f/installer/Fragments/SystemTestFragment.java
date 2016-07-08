@@ -145,28 +145,33 @@ public class SystemTestFragment extends Fragment implements View.OnClickListener
             ccuname = getArguments().getString("ccuname");
             newquery.equals("ccu_name", ccuname);
             if (Generic_Methods.isNetworkAvailable(CCU_Details.getSingletonContext())) {
-                if (Pleasewait == null) {
-                    Pleasewait = ProgressDialog.show(CCU_Details.getSingletonContext(), "", "Please Wait...");
-                }
+                if (Generic_Methods.getKinveyClient().user().isUserLoggedIn()) {
+                    if (Pleasewait == null) {
+                        Pleasewait = ProgressDialog.show(CCU_Details.getSingletonContext(), "", "Please Wait...");
+                    }
 
-                AsyncAppData<GenericJson> summary = Generic_Methods.getKinveyClient().appData("00CCUSummary", GenericJson.class);
-                summary.get(newquery, new KinveyListCallback<GenericJson>() {
-                    @Override
-                    public void onSuccess(GenericJson[] genericJsons) {
+                    AsyncAppData<GenericJson> summary = Generic_Methods.getKinveyClient().appData("00CCUSummary", GenericJson.class);
+
+                    summary.get(newquery, new KinveyListCallback<GenericJson>() {
+                        @Override
+                        public void onSuccess(GenericJson[] genericJsons) {
 
                             dismissDialog();
                             String Summarydata = genericJsons[0].toString();
                             setTheValues(Summarydata);
 
 
-                    }
+                        }
 
-                    @Override
-                    public void onFailure(Throwable throwable) {
-                        dismissDialog();
-                        Toast.makeText(getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                });
+                        @Override
+                        public void onFailure(Throwable throwable) {
+                            dismissDialog();
+                            Toast.makeText(getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                } else {
+                    Generic_Methods.ping();
+                }
             } else {
                 Generic_Methods.getToast(CCU_Details.getSingletonContext(), getResources().getString(R.string.user_offline));
             }
@@ -525,7 +530,7 @@ public class SystemTestFragment extends Fragment implements View.OnClickListener
                                 } else if (genericJsons.length == 1) {
                                     try {
                                         JSONObject s = new JSONObject(genericJsons[0].toString());
-                                        if (!Generic_Methods.getStringPreference(CCU_Details.getSingletonContext(), "otp", "lastotp").equalsIgnoreCase(s.getString("oneTimePassword"))) {
+                                        if (!Generic_Methods.getDataFromOtpBasedOnCcuId(getArguments().getString("ccu_id")).optvalue.equalsIgnoreCase(s.getString("oneTimePassword"))) {
                                             Otp_Verification otp_verification = new Otp_Verification(CCU_Details.getSingletonContext(), getArguments().getString("ccu_id"), 2);
                                             otp_verification.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                                             otp_verification.show();
