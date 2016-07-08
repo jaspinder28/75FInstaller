@@ -512,7 +512,7 @@ public class SystemTestFragment extends Fragment implements View.OnClickListener
 
         CCU_Details.getSingletonContext().systemTestUpdate = new Runnable() {
             @Override
-            public void run() {
+            public void run() {//
                 if (CCU_Details.getSingletonContext() != null && CCU_Details.getSingletonContext().viewPager.getCurrentItem() == 2) {
                     Log.e("checkingotpsystemtest", "yes");
                     if (Generic_Methods.isNetworkAvailable(CCU_Details.getSingletonContext())) {
