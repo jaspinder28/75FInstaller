@@ -14,11 +14,7 @@ import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.Filter;
 import android.widget.ListView;
 import android.widget.SearchView;
@@ -30,7 +26,6 @@ import com.x75f.installer.Utils.Generic_Methods;
 import com.x75f.installer.Utils.UsersData;
 
 import java.util.ArrayList;
-
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -75,6 +70,9 @@ public class CcuListActivity extends AppCompatActivity implements SearchView.OnQ
             }
         }
 
+        users = new ArrayList<>();
+        users = (ArrayList<UsersData>) getIntent().getSerializableExtra("ccudata");
+
     }
 
     private void setupSearchView() {
@@ -92,9 +90,6 @@ public class CcuListActivity extends AppCompatActivity implements SearchView.OnQ
         if (!search.isEmpty()) {
             search.clear();
         }
-        users = new ArrayList<>();
-        users = (ArrayList<UsersData>) getIntent().getSerializableExtra("ccudata");
-
         for (int i = 0; i < users.size(); i++) {
             search.add(users.get(i).getCcuName());
             sqLlite.insertdata(users.get(i).getUsername(), 0);

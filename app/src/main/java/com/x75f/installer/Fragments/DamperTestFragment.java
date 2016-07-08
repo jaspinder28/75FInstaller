@@ -101,7 +101,7 @@ public class DamperTestFragment extends Fragment implements SeekBar.OnSeekBarCha
                 if (Pleasewait == null) {
                     Pleasewait = ProgressDialog.show(CCU_Details.getSingletonContext(), "", "Please Wait...");
                 }
-                Generic_Methods.getToast(CCU_Details.getSingletonContext(),"DAMPERDATA");
+//                Generic_Methods.getToast(CCU_Details.getSingletonContext(),"DAMPERDATA");
                 AsyncAppData<GenericJson> summary = Generic_Methods.getKinveyClient().appData("00CCUSummary", GenericJson.class);
                 summary.get(newquery, new KinveyListCallback<GenericJson>() {
                     @Override

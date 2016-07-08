@@ -10,7 +10,7 @@
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@mipmap/main"
+        android:background="@mipmap/login_bg"
         android:scaleType="centerCrop" />
 
 
@@ -20,7 +20,7 @@
         android:layout_height="40dp"
         android:layout_marginLeft="25dp"
         android:layout_marginRight="25dp"
-        android:layout_marginTop="205dp"
+        android:layout_marginTop="140dp"
         android:background="@drawable/border"
         android:hint="Email Address"
         android:inputType="textEmailAddress"
@@ -50,7 +50,7 @@
         android:background="@drawable/border"
         android:padding="5dp"
         android:text="Login"
-        android:textColor="@color/red" />
+        android:textColor="#FF5722" />
 
     <Button
         android:id="@+id/bForgotPass"

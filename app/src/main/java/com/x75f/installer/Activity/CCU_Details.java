@@ -25,16 +25,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 
 import com.google.api.client.json.GenericJson;
 import com.kinvey.android.AsyncAppData;
-import com.kinvey.android.Client;
 import com.kinvey.android.callback.KinveyListCallback;
-import com.kinvey.android.callback.KinveyUserCallback;
-import com.kinvey.java.Logger;
 import com.kinvey.java.Query;
-
 import com.x75f.installer.DB_Local.SQLliteAdapter;
 import com.x75f.installer.Fragments.DamperTestFragment;
 import com.x75f.installer.Fragments.DataLogFragment;
@@ -45,9 +40,6 @@ import com.x75f.installer.R;
 import com.x75f.installer.Utils.Generic_Methods;
 
 import org.json.JSONObject;
-
-import butterknife.ButterKnife;
-import butterknife.InjectView;
 
 
 public class CCU_Details extends AppCompatActivity implements View.OnClickListener {
@@ -71,6 +63,7 @@ public class CCU_Details extends AppCompatActivity implements View.OnClickListen
     public Runnable systemTestUpdate;
     public Handler damperTestHandler;
     public Runnable damperTestUpdate;
+
 //    public RTApi notesApi;
 //    public RTManager NotesManager;
     public static CCU_Details _singleton;
@@ -154,6 +147,7 @@ public class CCU_Details extends AppCompatActivity implements View.OnClickListen
         damperTestHandler = new Handler();
         ccuname = getIntent().getStringExtra("CcuData");
         ccuid = getIntent().getStringExtra("ccu_id");
+        viewPager.setCurrentItem(currentPage);
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -430,6 +424,7 @@ public class CCU_Details extends AppCompatActivity implements View.OnClickListen
         Generic_Methods.createEditDataLogSharedPreference(CCU_Details.getSingletonContext(), "");
         Generic_Methods.PauseCalledDatalog();
         Generic_Methods.PauseCalledSummary();
+        currentPage = viewPager.getCurrentItem();
 
 
     }

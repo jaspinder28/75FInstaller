@@ -6,13 +6,11 @@ import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.kinvey.android.Client;
 import com.kinvey.android.callback.KinveyListCallback;
 import com.kinvey.android.callback.KinveyUserCallback;
 import com.kinvey.java.Query;
@@ -25,6 +23,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 if (Generic_Methods.isNetworkAvailable(MainActivity.getSingletonContext())) {
                     if (etEmail.getText().toString().equalsIgnoreCase("")) {
                         Toast.makeText(MainActivity.this, R.string.email_empty, Toast.LENGTH_SHORT).show();
-                    } else if (etEmail.getText().toString().indexOf("@") == -1 || etEmail.getText().toString().indexOf(".") == -1) {
+                    } else if (!isEmailValid(etEmail.getText().toString())) {
                         Toast.makeText(MainActivity.this, R.string.invalid_email, Toast.LENGTH_SHORT).show();
                     } else if (etPassword.getText().toString().equalsIgnoreCase("")) {
                         Toast.makeText(MainActivity.this, R.string.password_empty, Toast.LENGTH_SHORT).show();
@@ -159,6 +159,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         });
         h.start();
 
+    }
+
+    //checking if email address is valid
+
+    public static boolean isEmailValid(String email) {
+        boolean isValid = false;
+
+        String expression = "^[\\w\\.]+@([\\w\\-]+\\.)+[A-Z]{2,4}$";
+        CharSequence inputStr = email;
+
+        Pattern pattern = Pattern.compile(expression, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(inputStr);
+        if (matcher.matches()) {
+            isValid = true;
+        }
+        return isValid;
     }
 
 

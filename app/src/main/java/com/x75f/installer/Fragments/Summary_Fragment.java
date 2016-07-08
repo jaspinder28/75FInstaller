@@ -4,7 +4,6 @@ import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -162,7 +161,7 @@ public class Summary_Fragment extends Fragment {
                             s.optInt("mOutsideAirMinTemp", 0), s.optInt("mOutsideAirHumidity", 0), s.optInt("mOutsideAirMaxHumidity", 0), s.optInt("mOutsideAirMinHumidity", 0),
                             s.optInt("mCO2Level", 0), s.optInt("mCO2LevelThreshold", 2000), s.optInt("mMixedAirTemperature"), s.optInt("mReturnAirTemperature"), s.optInt("mDamperPos", 0), s.optString("zone_summary"),
                             s.optInt("mNO2Level", 0), s.optInt("mNO2LevelThreshold", 10), s.optInt("mCOLevel", 0), s.optInt("mCOLevelThreshold", 250), s.optBoolean("isPressureSensorPaired", false), s.optDouble("mPressureLevel", 0), s.optDouble("mPressureLevelThreshold", 0),
-                            s.optBoolean("isCOPaired", false), s.optBoolean("isNO2Paired", false),s.optInt("analog1_type",-1),s.optInt("analog2_type",-1),s.optInt("analog3_type",-1),s.optInt("analog4_type",-1));
+                            s.optBoolean("isCOPaired", false), s.optBoolean("isNO2Paired", false), s.optInt("analog1_type", -1), s.optInt("analog2_type", -1), s.optInt("analog3_type", -1), s.optInt("analog4_type", -1));
 
                 } else {
                     sd = new Summary_Data(s.optString("ccu_name", ""), s.optString("date_time", ""), s.optInt("building_no_cooler", 0),
@@ -178,7 +177,7 @@ public class Summary_Fragment extends Fragment {
                             s.optInt("mOutsideAirMinHumidity", 0),
                             s.optInt("mMixedAirTemperature", 0), s.optInt("mReturnAirTemperature", 0),
                             s.optInt("mDamperPos", 0), s.optString("zone_summary"),
-                            s.optBoolean("isPressureSensorPaired", false), s.optDouble("mPressureLevel", 0), s.optDouble("mPressureLevelThreshold", 0),s.optInt("analog1_type",-1),s.optInt("analog2_type",-1),s.optInt("analog3_type",-1),s.optInt("analog4_type",-1));
+                            s.optBoolean("isPressureSensorPaired", false), s.optDouble("mPressureLevel", 0), s.optDouble("mPressureLevelThreshold", 0), s.optInt("analog1_type", -1), s.optInt("analog2_type", -1), s.optInt("analog3_type", -1), s.optInt("analog4_type", -1));
                 }
 
                 if (sd.getCooling_stage_1() == 0) {
@@ -256,7 +255,7 @@ public class Summary_Fragment extends Fragment {
                                     object1.optString("thursday_occutime"), object1.optString("thursday_unoccutime"), object1.optInt("thursday_occutemp"),
                                     object1.optString("friday_occutime"), object1.optString("friday_unoccutime"), object1.optInt("friday_occutemp"),
                                     object1.optString("saturday_occutime"), object1.optString("saturday_unoccutime"), object1.optInt("saturday_occutemp"),
-                                    object1.optString("sunday_occutime"), object1.optString("sunday_unoccutime"), object1.optInt("sunday_occutemp")));
+                                    object1.optString("sunday_occutime"), object1.optString("sunday_unoccutime"), object1.optInt("sunday_occutemp"), object.optString("schedule_type")));
                         } catch (JSONException e) {
                             Log.e("Zone_Error1", e.getMessage());
                             try {
@@ -270,7 +269,7 @@ public class Summary_Fragment extends Fragment {
                                         object1.optString("thursday_occutime"), object1.optString("thursday_unoccutime"), object1.optInt("thursday_occutemp"),
                                         object1.optString("friday_occutime"), object1.optString("friday_unoccutime"), object1.optInt("friday_occutemp"),
                                         object1.optString("saturday_occutime"), object1.optString("saturday_unoccutime"), object1.optInt("saturday_occutemp"),
-                                        object1.optString("sunday_occutime"), object1.optString("sunday_unoccutime"), object1.optInt("sunday_occutemp")));
+                                        object1.optString("sunday_occutime"), object1.optString("sunday_unoccutime"), object1.optInt("sunday_occutemp"), object.optString("schedule_type")));
                             } catch (JSONException e1) {
                                 Log.e("Zone_Error2", e1.getMessage());
                                 try {
@@ -283,7 +282,7 @@ public class Summary_Fragment extends Fragment {
                                             "", "", 0,
                                             "", "", 0,
                                             "", "", 0,
-                                            "", "", 0));
+                                            "", "", 0, ""));
                                 } catch (Exception e2) {
                                     Log.e("Zone_Error3", e1.getMessage());
                                     zoneDatas.add(new zone_data(object.optString("name"), object.optBoolean("fsv_paired"), object.optInt("fsv_address"),
@@ -295,7 +294,7 @@ public class Summary_Fragment extends Fragment {
                                             "", "", 0,
                                             "", "", 0,
                                             "", "", 0,
-                                            "", "", 0));
+                                            "", "", 0, ""));
                                 }
 
                             }
@@ -310,7 +309,7 @@ public class Summary_Fragment extends Fragment {
                                 "", "", 0,
                                 "", "", 0,
                                 "", "", 0,
-                                "", "", 0));
+                                "", "", 0, object.optString("schedule_type")));
                     }
 
 
@@ -327,93 +326,93 @@ public class Summary_Fragment extends Fragment {
 
         @Override
         protected void onPostExecute(Summary_Data sd) {
-                Log.d("done", "dataloaded");
+            Log.d("done", "dataloaded");
 
-                timezone.setText(sd.getDate_time());
-                timezone1.setText(sd.getDate_time());
-                ccuName.setText(sd.getCcu_name());
-                Building_limit.setText(sd.getBuilding_no_cooler() + "/" + sd.getBuilding_no_hotter());
-                user_limit.setText(sd.getUser_no_cooler() + "/" + sd.getUser_no_hotter());
-                current_temp.setText(sd.getCm_cur_temp() + "");
-                current_humidity.setText(sd.getCm_cur_humidity() + "");
-                if ((sd.getCooling_stage_1() == 0 || sd.getCooling_stage_1() == 1) && (sd.getCooling_stage_2() == 0 || sd.getCooling_stage_2() == 1)) {
-                    hvac_equipment_detail.setText("Cooling Stage 1(" + cooling_stage1 + ") and 2(" + cooling_stage2 + ")");
-                } else if ((sd.getCooling_stage_1() == -1) && (sd.getCooling_stage_2() == 0 || sd.getCooling_stage_2() == 1)) {
-                    hvac_equipment_detail.setText("Cooling Stage 2(" + cooling_stage2 + ")");
-                } else if ((sd.getCooling_stage_2() == -1) && (sd.getCooling_stage_1() == 0 || sd.getCooling_stage_1() == 1)) {
-                    hvac_equipment_detail.setText("Cooling Stage 1(" + cooling_stage1 + ")");
-                } else if (sd.getCooling_stage_1() == -1 && sd.getCooling_stage_2() == -1) {
-                    hvac_equipment_detail.setVisibility(View.GONE);
-                }
+            timezone.setText(sd.getDate_time());
+            timezone1.setText(sd.getDate_time());
+            ccuName.setText(sd.getCcu_name());
+            Building_limit.setText(sd.getBuilding_no_cooler() + "/" + sd.getBuilding_no_hotter());
+            user_limit.setText(sd.getUser_no_cooler() + "/" + sd.getUser_no_hotter());
+            current_temp.setText(sd.getCm_cur_temp() + "");
+            current_humidity.setText(sd.getCm_cur_humidity() + "");
+            if ((sd.getCooling_stage_1() == 0 || sd.getCooling_stage_1() == 1) && (sd.getCooling_stage_2() == 0 || sd.getCooling_stage_2() == 1)) {
+                hvac_equipment_detail.setText("Cooling Stage 1(" + cooling_stage1 + ") and 2(" + cooling_stage2 + ")");
+            } else if ((sd.getCooling_stage_1() == -1) && (sd.getCooling_stage_2() == 0 || sd.getCooling_stage_2() == 1)) {
+                hvac_equipment_detail.setText("Cooling Stage 2(" + cooling_stage2 + ")");
+            } else if ((sd.getCooling_stage_2() == -1) && (sd.getCooling_stage_1() == 0 || sd.getCooling_stage_1() == 1)) {
+                hvac_equipment_detail.setText("Cooling Stage 1(" + cooling_stage1 + ")");
+            } else if (sd.getCooling_stage_1() == -1 && sd.getCooling_stage_2() == -1) {
+                hvac_equipment_detail.setVisibility(View.GONE);
+            }
 
-                if ((sd.getHeating_stage_1() == 0 || sd.getHeating_stage_1() == 1) && (sd.getHeating_stage_2() == 0 || sd.getHeating_stage_2() == 1)) {
-                    hvac_equipment_detail1.setText("Heating Stage 1(" + heating_stage1 + ") and 2(" + heating_stage2 + ")");
-                } else if ((sd.getHeating_stage_1() == -1) && (sd.getHeating_stage_2() == 0 || sd.getHeating_stage_2() == 1)) {
-                    hvac_equipment_detail1.setText("Heating Stage 2(" + heating_stage2 + ")");
-                } else if ((sd.getHeating_stage_2() == -1) && (sd.getHeating_stage_1() == 0 || sd.getHeating_stage_1() == 1)) {
-                    hvac_equipment_detail1.setText("Heating Stage 1(" + heating_stage1 + ")");
-                } else if (sd.getHeating_stage_1() == -1 && sd.getHeating_stage_2() == -1) {
-                    hvac_equipment_detail1.setVisibility(View.GONE);
-                }
+            if ((sd.getHeating_stage_1() == 0 || sd.getHeating_stage_1() == 1) && (sd.getHeating_stage_2() == 0 || sd.getHeating_stage_2() == 1)) {
+                hvac_equipment_detail1.setText("Heating Stage 1(" + heating_stage1 + ") and 2(" + heating_stage2 + ")");
+            } else if ((sd.getHeating_stage_1() == -1) && (sd.getHeating_stage_2() == 0 || sd.getHeating_stage_2() == 1)) {
+                hvac_equipment_detail1.setText("Heating Stage 2(" + heating_stage2 + ")");
+            } else if ((sd.getHeating_stage_2() == -1) && (sd.getHeating_stage_1() == 0 || sd.getHeating_stage_1() == 1)) {
+                hvac_equipment_detail1.setText("Heating Stage 1(" + heating_stage1 + ")");
+            } else if (sd.getHeating_stage_1() == -1 && sd.getHeating_stage_2() == -1) {
+                hvac_equipment_detail1.setVisibility(View.GONE);
+            }
 
-                if ((sd.getFan_stage_1() == 0 || sd.getFan_stage_1() == 1) && (sd.getFan_stage_2() == 0 || sd.getFan_stage_2() == 1)) {
-                    hvac_equipment_detail2.setText("Fan Stage 1(" + fan_stage1 + ") and 2(" + fan_stage2 + ")");
-                } else if ((sd.getFan_stage_1() == -1) && (sd.getFan_stage_2() == 0 || sd.getFan_stage_2() == 1)) {
-                    hvac_equipment_detail2.setText("Fan Stage 2(" + fan_stage2 + ")");
-                } else if ((sd.getFan_stage_2() == -1) && (sd.getFan_stage_1() == 0 || sd.getFan_stage_1() == 1)) {
-                    hvac_equipment_detail2.setText("Fan Stage 1(" + fan_stage1 + ")");
-                } else if (sd.getFan_stage_1() == -1 && sd.getFan_stage_2() == -1) {
-                    hvac_equipment_detail2.setVisibility(View.GONE);
-                }
+            if ((sd.getFan_stage_1() == 0 || sd.getFan_stage_1() == 1) && (sd.getFan_stage_2() == 0 || sd.getFan_stage_2() == 1)) {
+                hvac_equipment_detail2.setText("Fan Stage 1(" + fan_stage1 + ") and 2(" + fan_stage2 + ")");
+            } else if ((sd.getFan_stage_1() == -1) && (sd.getFan_stage_2() == 0 || sd.getFan_stage_2() == 1)) {
+                hvac_equipment_detail2.setText("Fan Stage 2(" + fan_stage2 + ")");
+            } else if ((sd.getFan_stage_2() == -1) && (sd.getFan_stage_1() == 0 || sd.getFan_stage_1() == 1)) {
+                hvac_equipment_detail2.setText("Fan Stage 1(" + fan_stage1 + ")");
+            } else if (sd.getFan_stage_1() == -1 && sd.getFan_stage_2() == -1) {
+                hvac_equipment_detail2.setVisibility(View.GONE);
+            }
 
-                if (sd.getHumidifier() == -1) {
-                    hvac_equipment_detail3.setVisibility(View.GONE);
-                } else {
-                    hvac_equipment_detail3.setText("Humidifier(" + humidifier + ")");
-                }
+            if (sd.getHumidifier() == -1) {
+                hvac_equipment_detail3.setVisibility(View.GONE);
+            } else {
+                hvac_equipment_detail3.setText("Humidifier(" + humidifier + ")");
+            }
 
-                if (sd.isEconomizerAvailable() == true && sd.isPaired() == true) {
-                    hvac_equipment_detail4.setText("Economizer(Yes/Yes)");
-                } else if (sd.isEconomizerAvailable() == true && sd.isPaired() == false) {
-                    hvac_equipment_detail4.setText("Economizer(Yes/No)");
-                } else {
-                    hvac_equipment_detail4.setText("Economizer(No/No)");
-                }
-                hvac_equipment_detail5.setText("Analog(" + sd.getAnalog1_damperPos() + "/" + sd.getAnalog2_damperPos() + "/" + sd.getAnalog3_damperPos() + "/" + sd.getAnalog4_damperPos() + ")");
+            if (sd.isEconomizerAvailable() == true && sd.isPaired() == true) {
+                hvac_equipment_detail4.setText("Economizer(Yes/Yes)");
+            } else if (sd.isEconomizerAvailable() == true && sd.isPaired() == false) {
+                hvac_equipment_detail4.setText("Economizer(Yes/No)");
+            } else {
+                hvac_equipment_detail4.setText("Economizer(No/No)");
+            }
+            hvac_equipment_detail5.setText("Analog(" + sd.getAnalog1_damperPos() + "/" + sd.getAnalog2_damperPos() + "/" + sd.getAnalog3_damperPos() + "/" + sd.getAnalog4_damperPos() + ")");
 
-                economiser_detail.setText("Enthalpy(In:" + String.format("%.1f", sd.getmInsideAirEnthalpy()) + ")/(Out:" + String.format("%.1f", sd.getmOutsideAirEnthalpy()) + ")");
-                economiser_detail1.setText("Outside Temp:" + sd.getmOutsideAirTemperature() + "(" + sd.getmOutsideAirMinTemp() + "-" + sd.getmOutsideAirMaxTemp() + ")");
-                economiser_detail2.setText("Outside Humidity:" + sd.getmOutsideAirHumidity() + "(" + sd.getmOutsideAirMinHumidity() + "-" + sd.getmOutsideAirMaxHumidity() + ")");
-                economiser_detail3.setText("Damper Pos:" + sd.getmDamperPos());
-                economiser_detail4.setText("MAT:" + sd.getmMixedAirTemperature() + "/RAT:" + sd.getmReturnAirTemperature());
-                if (sd.isPaired()) {
+            economiser_detail.setText("Enthalpy(In:" + String.format("%.1f", sd.getmInsideAirEnthalpy()) + ")/(Out:" + String.format("%.1f", sd.getmOutsideAirEnthalpy()) + ")");
+            economiser_detail1.setText("Outside Temp:" + sd.getmOutsideAirTemperature() + "(" + sd.getmOutsideAirMinTemp() + "-" + sd.getmOutsideAirMaxTemp() + ")");
+            economiser_detail2.setText("Outside Humidity:" + sd.getmOutsideAirHumidity() + "(" + sd.getmOutsideAirMinHumidity() + "-" + sd.getmOutsideAirMaxHumidity() + ")");
+            economiser_detail3.setText("Damper Pos:" + sd.getmDamperPos());
+            economiser_detail4.setText("MAT:" + sd.getmMixedAirTemperature() + "/RAT:" + sd.getmReturnAirTemperature());
+            if (sd.isPaired()) {
 
-                    economiser_detail5.setText("CO2:" + sd.getmCO2Level() + "(" + sd.getmCO2LevelThreshold() + ")");
-                    economiser_detail6.setText("CO:" + sd.getmCOLevel() + "(" + sd.getmCOLevelThreshold() + ")");
-                    economiser_detail7.setText("NO2:" + sd.getmNO2Level() + "(" + sd.getmNO2LevelThreshold() + ")");
+                economiser_detail5.setText("CO2:" + sd.getmCO2Level() + "(" + sd.getmCO2LevelThreshold() + ")");
+                economiser_detail6.setText("CO:" + sd.getmCOLevel() + "(" + sd.getmCOLevelThreshold() + ")");
+                economiser_detail7.setText("NO2:" + sd.getmNO2Level() + "(" + sd.getmNO2LevelThreshold() + ")");
 
-                } else {
-                    economiser_detail.setText("Not Paired");
-                    economiser_detail1.setVisibility(View.GONE);
-                    economiser_detail2.setVisibility(View.GONE);
-                    economiser_detail3.setVisibility(View.GONE);
-                    economiser_detail4.setVisibility(View.GONE);
-                    economiser_detail5.setVisibility(View.GONE);
-                    economiser_detail6.setVisibility(View.GONE);
-                    economiser_detail7.setVisibility(View.GONE);
-                }
-                scrollView.smoothScrollTo(0, 0);
-                if (zoneDatas.size() != 0) {
-                    Zones_Adapter zones_adapter = new Zones_Adapter(CCU_Details.getSingletonContext(), zoneDatas);
-                    ZoneList.setAdapter(zones_adapter);
-                    Helper.getListViewSize(ZoneList);
-                }
-                if (sd.isPressureSensorPaired()) {
-                    pressure_sensor.setText(String.format("%.2f", sd.getmPressureLevel()) + "(" + String.format("%.2f", sd.getmPressureLevelThreshold()) + ")");
-                } else {
-                    pressure_sensor.setText("NA");
-                }
-                dismissDialog();
+            } else {
+                economiser_detail.setText("Not Paired");
+                economiser_detail1.setVisibility(View.GONE);
+                economiser_detail2.setVisibility(View.GONE);
+                economiser_detail3.setVisibility(View.GONE);
+                economiser_detail4.setVisibility(View.GONE);
+                economiser_detail5.setVisibility(View.GONE);
+                economiser_detail6.setVisibility(View.GONE);
+                economiser_detail7.setVisibility(View.GONE);
+            }
+            scrollView.smoothScrollTo(0, 0);
+            if (zoneDatas.size() != 0) {
+                Zones_Adapter zones_adapter = new Zones_Adapter(CCU_Details.getSingletonContext(), zoneDatas);
+                ZoneList.setAdapter(zones_adapter);
+                Helper.getListViewSize(ZoneList);
+            }
+            if (sd.isPressureSensorPaired()) {
+                pressure_sensor.setText(String.format("%.2f", sd.getmPressureLevel()) + "(" + String.format("%.2f", sd.getmPressureLevelThreshold()) + ")");
+            } else {
+                pressure_sensor.setText("NA");
+            }
+            dismissDialog();
 
         }
     }

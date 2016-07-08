@@ -39,8 +39,13 @@ public class zone_data implements Serializable {
     private String sunday_occutime;
     private String sunday_unoccutime;
     private int sunday_occutemp;
+    private String schedule_type;
 
-    public zone_data(String name, boolean fsv_paired, int fsv_address, int damper_size, String damper_type, String occu_sensor, int set_temp, int cur_temp, int damper_pos, String occupied, int airflow_temp, String monday_occutime, String monday_unoccutime, int monday_occutemp, String tuesday_occutime, String tuesday_unoccutime, int tuesday_occutemp, String wednesday_occutime, String wednesday_unoccutime, int wednesday_occutemp, String thursday_occutime, String thursday_unoccutime, int thursday_occutemp, String friday_occutime, String friday_unoccutime, int friday_occutemp, String saturday_occutime, String saturday_unoccutime, int saturday_occutemp, String sunday_occutime, String sunday_unoccutime, int sunday_occutemp) {
+    public String getSchedule_type() {
+        return schedule_type;
+    }
+
+    public zone_data(String name, boolean fsv_paired, int fsv_address, int damper_size, String damper_type, String occu_sensor, int set_temp, int cur_temp, int damper_pos, String occupied, int airflow_temp, String monday_occutime, String monday_unoccutime, int monday_occutemp, String tuesday_occutime, String tuesday_unoccutime, int tuesday_occutemp, String wednesday_occutime, String wednesday_unoccutime, int wednesday_occutemp, String thursday_occutime, String thursday_unoccutime, int thursday_occutemp, String friday_occutime, String friday_unoccutime, int friday_occutemp, String saturday_occutime, String saturday_unoccutime, int saturday_occutemp, String sunday_occutime, String sunday_unoccutime, int sunday_occutemp, String schedule_type) {
         this.name = name;
         this.fsv_paired = fsv_paired;
         this.fsv_address = fsv_address;
@@ -73,6 +78,7 @@ public class zone_data implements Serializable {
         this.sunday_occutime = sunday_occutime;
         this.sunday_unoccutime = sunday_unoccutime;
         this.sunday_occutemp = sunday_occutemp;
+        this.schedule_type = schedule_type;
     }
 
     public int getSet_temp() {

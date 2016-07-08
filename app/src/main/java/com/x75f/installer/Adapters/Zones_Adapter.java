@@ -58,6 +58,7 @@ public class Zones_Adapter extends BaseAdapter {
         }
         if (zone_datas.size() > 0) {
             view_holder.zoneName.setText("" + zone_datas.get(position).getName());
+            view_holder.schedule_type.setText(zone_datas.get(position).getSchedule_type());
             if (zone_datas.get(position).isFsv_paired()) {
                 view_holder.wrm_address.setText("" + zone_datas.get(position).getFsv_address());
                 view_holder.damper_size.setText("" + zone_datas.get(position).getDamper_size());
@@ -66,6 +67,8 @@ public class Zones_Adapter extends BaseAdapter {
                 view_holder.desired_temp.setText("" + zone_datas.get(position).getSet_temp());
                 view_holder.current_temp.setText("" + zone_datas.get(position).getCur_temp());
                 view_holder.damper_pos.setText("" + zone_datas.get(position).getDamper_pos());
+                view_holder.damper_pos.setText("" + zone_datas.get(position).getDamper_pos());
+
                 if (zone_datas.get(position).getOccupied().equals("")) {
                     view_holder.tableRow10.setVisibility(View.GONE);
                 } else {
@@ -128,6 +131,7 @@ public class Zones_Adapter extends BaseAdapter {
         private TextView occupancy;
         private TextView air_flow_temp;
         private TextView zone_schedule;
+        private TextView schedule_type;
         private TextView zone_schedule_Mon;
         private TextView zone_schedule_Tue;
         private TextView zone_schedule_Wed;
@@ -160,6 +164,7 @@ public class Zones_Adapter extends BaseAdapter {
             occupancy = (TextView) v.findViewById(R.id.occupancy);
             air_flow_temp = (TextView) v.findViewById(R.id.air_flow_temp);
             zone_schedule = (TextView) v.findViewById(R.id.zone_schedule);
+            schedule_type = (TextView) v.findViewById(R.id.schedule_type);
             zone_schedule_Mon = (TextView) v.findViewById(R.id.zone_schedule_Mon);
             zone_schedule_Tue = (TextView) v.findViewById(R.id.zone_schedule_Tue);
             zone_schedule_Wed = (TextView) v.findViewById(R.id.zone_schedule_Wed);
