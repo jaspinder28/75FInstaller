@@ -9,16 +9,16 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
+        android:name=".Activity.Installer"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:name=".Activity.Installer"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
             android:name=".Activity.Splash_Acivity"
-            android:screenOrientation="portrait"
-            android:launchMode="singleInstance">
+            android:launchMode="singleInstance"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -27,18 +27,25 @@
         </activity>
         <activity
             android:name=".Activity.MainActivity"
-            android:screenOrientation="portrait"
-            android:launchMode="singleInstance">
-        </activity>
+            android:launchMode="singleInstance"
+            android:screenOrientation="portrait"></activity>
 
         <activity
             android:name=".Activity.CcuListActivity"
-            android:screenOrientation="portrait"
-            android:launchMode="singleInstance" />
+            android:launchMode="singleInstance"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".Activity.CCU_Details"
-            android:screenOrientation="portrait"
-            android:launchMode="singleInstance" />
+            android:launchMode="singleInstance"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Activity.AddEditNote"
+            android:launchMode="singleInstance"
+            android:screenOrientation="portrait" />
+        <activity android:name="com.onegravity.rteditor.media.choose.MediaChooserActivity" />
+
+        <activity android:name="com.onegravity.rteditor.media.crop.CropImageActivity" />
+
     </application>
 
 </manifest>

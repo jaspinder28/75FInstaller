@@ -10,4 +10,6 @@
     <string name="invalid_email">Please enter valid email Address.</string>
     <string name="otp_expired">OTP has expired.Please generate OTP again.</string>
 
-</resources>
+
+
+    </resources>

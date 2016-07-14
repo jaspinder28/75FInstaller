@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <include
+        android:id="@+id/tool_bar"
+        layout="@layout/toolbar"></include>
+
+
+
+    <com.onegravity.rteditor.RTEditText
+        android:id="@+id/NotesEditor"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tool_bar"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="10dp"
+        android:background="@color/transparent"
+        android:cursorVisible="true"
+        android:imeOptions="actionDone|flagNoEnterAction"
+        android:inputType="textMultiLine|textCapSentences" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_alignParentBottom="true"
+        android:id="@+id/ll"
+        android:orientation="horizontal"
+        android:weightSum="2"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/bCam"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="70dp"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/button_border"
+            android:padding="5dp"
+            android:text="Camera"
+            android:onClick="buttonChange"
+            android:textColor="@color/primary"
+            android:textSize="10sp" />
+
+        <Button
+            android:id="@+id/bDelete"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="70dp"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/button_border"
+            android:padding="5dp"
+            android:onClick="buttonChange"
+            android:text="Delete"
+            android:textColor="@color/primary"
+            android:textSize="10sp" />
+    </LinearLayout>
+
+</RelativeLayout>

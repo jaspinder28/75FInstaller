@@ -6,20 +6,15 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.NumberPicker;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
@@ -27,12 +22,9 @@ import com.google.api.client.json.GenericJson;
 import com.kinvey.android.AsyncAppData;
 import com.kinvey.android.callback.KinveyListCallback;
 import com.kinvey.java.Query;
-import com.pubnub.api.Callback;
-import com.pubnub.api.Pubnub;
 import com.x75f.installer.Activity.CCU_Details;
 import com.x75f.installer.Activity.Otp_Verification;
 import com.x75f.installer.R;
-import com.x75f.installer.Utils.App_Constants;
 import com.x75f.installer.Utils.Generic_Methods;
 import com.x75f.installer.Utils.Summary_Data;
 
@@ -512,7 +504,7 @@ public class SystemTestFragment extends Fragment implements View.OnClickListener
 
         CCU_Details.getSingletonContext().systemTestUpdate = new Runnable() {
             @Override
-            public void run() {//
+            public void run() {////
                 if (CCU_Details.getSingletonContext() != null && CCU_Details.getSingletonContext().viewPager.getCurrentItem() == 2) {
                     Log.e("checkingotpsystemtest", "yes");
                     if (Generic_Methods.isNetworkAvailable(CCU_Details.getSingletonContext())) {

@@ -16,17 +16,17 @@
         android:text="Add New Note"
         android:textColor="@color/primary" />
 
-    <!--<com.onegravity.rteditor.RTEditText-->
-        <!--android:id="@+id/rtEditText"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_marginLeft="16dp"-->
-        <!--android:layout_marginRight="16dp"-->
-        <!--android:background="@color/transparent"-->
-        <!--android:cursorVisible="true"-->
-        <!--android:layout_below="@+id/bAddNote"-->
-        <!--android:imeOptions="actionDone|flagNoEnterAction"-->
-        <!--android:inputType="textMultiLine|textAutoCorrect|textCapSentences" />-->
+    <ListView
+        android:layout_width="match_parent"
+        android:id="@+id/NotesList"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_below="@+id/bAddNote">
+
+    </ListView>
+
+
 
 
 </RelativeLayout>

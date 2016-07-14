@@ -30,7 +30,6 @@ import com.google.api.client.json.GenericJson;
 import com.kinvey.android.AsyncAppData;
 import com.kinvey.android.callback.KinveyListCallback;
 import com.kinvey.java.Query;
-
 import com.x75f.installer.Fragments.DamperTestFragment;
 import com.x75f.installer.Fragments.DataLogFragment;
 import com.x75f.installer.Fragments.NotesFragment;
@@ -129,6 +128,11 @@ public class CCU_Details extends AppCompatActivity implements View.OnClickListen
     protected void onResume() {
         super.onResume();
         OnResumeFn();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
     }
 
     public void OnResumeFn() {

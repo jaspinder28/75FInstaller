@@ -23,15 +23,12 @@ import com.pubnub.api.Callback;
 import com.pubnub.api.Pubnub;
 import com.pubnub.api.PubnubError;
 import com.x75f.installer.Activity.CCU_Details;
-import com.x75f.installer.Fragments.Summary_Fragment;
 import com.x75f.installer.R;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 
 /**
  * Created by JASPINDER on 6/13/2016.
@@ -70,10 +67,9 @@ public class Generic_Methods {
                 if (pingHandler != null) {
                     if (isNetworkAvailable(c)) {
                         ping();
-                        if(pingHandler != null)
-                        {
-                            pingHandler.postDelayed(this,20000);
-                        }else {
+                        if (pingHandler != null) {
+                            pingHandler.postDelayed(this, 20000);
+                        } else {
                             pingHandler = new Handler();
                             pingHandler.postDelayed(this, 20000);
                         }
@@ -271,7 +267,8 @@ public class Generic_Methods {
     }
 
     public static void getToast(Context context, String message) {
-        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+        if (context != null)
+            Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
     }
 
 

@@ -20,7 +20,6 @@ import android.widget.ListView;
 import android.widget.SearchView;
 
 import com.x75f.installer.Adapters.CcuListAdapter;
-
 import com.x75f.installer.R;
 import com.x75f.installer.Utils.Generic_Methods;
 import com.x75f.installer.Utils.Otp_List;
@@ -136,6 +135,11 @@ public class CcuListActivity extends AppCompatActivity implements SearchView.OnQ
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu, menu);
         return true;
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
     }
 
     @Override
